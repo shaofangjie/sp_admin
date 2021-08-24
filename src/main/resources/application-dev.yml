@@ -1,0 +1,92 @@
+server:
+  port: 8080
+  # session失效时间
+  servlet:
+    session:
+      timeout: PT2H
+      # Duration转换字符串方式，默认为正，负以-开头，紧接着P，（字母不区分大小写）D ：天 T：天和小时之间的分隔符 H ：小时 M：分钟 S：秒 每个单位都必须是数字，且时分秒顺序不能乱。例：PT2H就是2个小时，7200秒。
+spring:
+  #redis
+  redis:
+    host: localhost
+    port: 6379
+    password:
+    database: 0
+    timeout: PT30M #30分钟
+  #spring-session
+  session:
+    store-type: redis
+    timeout: PT30M
+  #数据源
+  datasource:
+    # Druid连接池配置
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      username: root
+      password: rootpwd
+      url: jdbc:mysql://127.0.0.12:3306/test_db?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull
+      driver-class-name: com.mysql.jdbc.Driver
+      # druid连接池监控
+      stat-view-servlet:
+        login-username: admin
+        login-password: admin
+      # 初始化时建立物理连接的个数
+      initialSize: 5
+      # 最小连接池数量
+      minIdle: 5
+      # 最大连接池数量
+      maxActive: 100
+      # 配置获取连接等待超时的时间
+      maxWait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      timeBetweenEvictionRunsMillis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      minEvictableIdleTimeMillis: 300000
+      # 验证连接是否有效。此参数必须设置为非空字符串，下面三项设置成true才能生效
+      validationQuery: SELECT 1 FROM DUAL
+      # 指明连接是否被空闲连接回收器(如果有)进行检验.如果检测失败,则连接将被从池中去除.
+      testWhileIdle: true
+      # 指明是否在从池中取出连接前进行检验,如果检验失败,则从池中去除连接并尝试取出另一个
+      testOnBorrow: false
+      # 指明是否在归还到池中前进行检验
+      testOnReturn: false
+      # 打开PSCache，并且指定每个连接上PSCache的大小
+      poolPreparedStatements: true
+      maxPoolPreparedStatementPerConnectionSize: 20
+      # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+      filters: stat,wall,log4j
+      # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+      connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=1000;druid.stat.logSlowSql=true
+      # 合并多个DruidDataSource的监控数据
+      useGlobalDataSourceStat: true
+
+  jackson:
+    default-property-inclusion: non_empty
+
+mybatis:
+  config-location: classpath:mybatis-config.xml
+  mapper-locations: classpath:mapping/*Mapper.xml
+  type-aliases-package: com.sp.admin.entity
+
+## Pagehelper
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+
+#showSql
+logging:
+  level:
+    com:
+      sp:
+        admin:
+         mapper : debug
+
+devtools:
+  livereload:
+    enabled: true
+    port: 9527
+  restart:
+    enabled: true
+
