@@ -26,15 +26,15 @@ layui.use(['form', 'admin', 'jquery'], function () {
     form.on('submit(login)', function (data) {
         $.ajaxSetup({
             data:{
-                "loginForm.password": hex_md5($("#password").val())
+                "password": hex_md5($("#password").val())
             }
         });
         $.ajax({
-            url:'/login',
+            url:'/doLogin',
             method:'POST',
             data:data.field,
             success:function(data){
-                if(data.errcode === 0){
+                if(data.status === 200){
                     window.location.href='/'
                 }else{
                     layer.msg(data.msg, {time: 2000, icon:5});
@@ -44,12 +44,12 @@ layui.use(['form', 'admin', 'jquery'], function () {
             error:function (error) {
                 data = JSON.parse(error.responseText);
                 if(data.detail === 1){
-                    if (!isEmptyString(data.msg["loginForm.userName"])){
-                        layer.msg(data.msg["loginForm.userName"], {time: 2000, icon:5});
-                    } else if (!isEmptyString(data.msg["loginForm.password"])) {
-                        layer.msg(data.msg["loginForm.password"], {time: 2000, icon:5});
-                    } else if (!isEmptyString(data.msg["loginForm.captcha"])) {
-                        layer.msg(data.msg["loginForm.captcha"], {time: 2000, icon:5});
+                    if (!isEmptyString(data.data["userName"])){
+                        layer.msg(data.data["userName"], {time: 2000, icon:5});
+                    } else if (!isEmptyString(data.data["password"])) {
+                        layer.msg(data.data["password"], {time: 2000, icon:5});
+                    } else if (!isEmptyString(data.data["captcha"])) {
+                        layer.msg(data.data["captcha"], {time: 2000, icon:5});
                     }
                 } else {
                     layer.msg(data.msg, {time: 2000, icon:5});

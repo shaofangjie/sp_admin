@@ -19,7 +19,9 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         List<String> list = new ArrayList<>();
+        list.add("/error");
         list.add("/login");
+        list.add("/doLogin");
         list.add("/captcha");
         list.add("/asset/**");
         registry.addInterceptor(new AuthInterceptor()).addPathPatterns("/**").excludePathPatterns(list);

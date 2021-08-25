@@ -34,16 +34,16 @@ public class AuthInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
         logger.info("执行到了preHandle方法");
         logger.info(handler.toString());
-        //获取控制器的名字
-        logger.info(((HandlerMethod)handler).getBean().getClass().getName());
+        //获取控制器的·
+        logger.info(((HandlerMethod) handler).getBean().getClass().getName());
         //获取方法名
-        logger.info(((HandlerMethod)handler).getMethod().getName());
+        logger.info(((HandlerMethod) handler).getMethod().getName());
         boolean isLogin = null != request.getSession().getAttribute("isLogin");
-        if (isLogin && checkPermission((HandlerMethod)handler)) {
+        if (isLogin && checkPermission((HandlerMethod) handler)) {
             logger.info("合格不需要拦截，放行");
             return true;
         } else {
-            response.sendRedirect(request.getContextPath()+"/login");//拦截后跳转的方法
+            response.sendRedirect(request.getContextPath() + "/login");//拦截后跳转的方法
             logger.info("已成功拦截并转发跳转");
             return false;
         }
@@ -75,7 +75,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         try {
             Method[] methods = Class.forName(classsName).getMethods();
             //判断指定方法是否有 IgnorePermissionCheck SpecifiedPermission 注解
-            for (Method method :methods) {
+            for (Method method : methods) {
                 IgnorePermissionCheck ignorePermissionCheckAnnotation = method.getAnnotation(IgnorePermissionCheck.class);
                 SpecifiedPermission specifiedPermissionAnnotation = method.getAnnotation(SpecifiedPermission.class);
                 if (methodName.equals(method.getName()) && null != ignorePermissionCheckAnnotation) {
