@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.List;
 
 @Component
 public class AuthInterceptor implements HandlerInterceptor {
@@ -112,14 +111,6 @@ public class AuthInterceptor implements HandlerInterceptor {
     }
 
     private boolean hasPermission(String checkAction, String adminId) {
-        //TODO数据库获取权限信息
-//        List<AdminResourcesEntity> adminResourcesEntitys = adminResourcesMapper.selectAdminResourcesByAdminId(Integer.parseInt(adminId));
-//
-//        for (AdminResourcesEntity adminResources : adminResourcesEntitys) {
-//            if (checkAction.equals(adminResources.getSourceFunction())) {
-//                return true;
-//            }
-//        }
 
         AdminResourcesEntity adminResourcesEntity = adminResourcesMapper.selectAdminResourceByAdminIdAndFun(Integer.parseInt(adminId), checkAction);
 
