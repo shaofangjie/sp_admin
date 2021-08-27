@@ -7,6 +7,7 @@ import com.sp.admin.commonutil.ResponseCode;
 import com.sp.admin.commonutil.ServerResponse;
 import com.sp.admin.forms.LoginForm;
 import com.sp.admin.service.AdminService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +22,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+@Slf4j
 @RestController
 public class LoginController extends BaseController {
-
-    private final static Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     @Autowired
     AdminService adminService;
@@ -57,6 +57,7 @@ public class LoginController extends BaseController {
 
     @PostMapping("/doLogin")
     public ServerResponse loginHandler(@Valid LoginForm loginForm, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
+        log.debug("{}------doLogin", request.getSession().getId());
         if (bindingResult.hasErrors()) {
             response.setStatus(400);
             JSONObject errors = getViolationErrMsg(bindingResult.getFieldErrors());

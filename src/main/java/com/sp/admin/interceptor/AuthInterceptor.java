@@ -5,6 +5,7 @@ import com.sp.admin.annotation.authentication.IgnorePermissionCheck;
 import com.sp.admin.annotation.authentication.SpecifiedPermission;
 import com.sp.admin.dao.AdminResourcesMapper;
 import com.sp.admin.entity.authority.AdminResourcesEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,16 +14,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
+@Slf4j
 @Component
 public class AuthInterceptor implements HandlerInterceptor {
-
-    private final static Logger logger = LoggerFactory.getLogger(AuthInterceptor.class);
 
     @Autowired
     ConfigurableApplicationContext context;
@@ -36,26 +37,30 @@ public class AuthInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
-        logger.info("执行到了preHandle方法");
-        logger.info(handler.toString());
-        //获取控制器的·
-        logger.info(((HandlerMethod) handler).getBean().getClass().getName());
-        //获取方法名
-        logger.info(((HandlerMethod) handler).getMethod().getName());
-        boolean isLogin = null != request.getSession().getAttribute("isLogin");
-        String adminId = null;
-        if (null != request.getSession().getAttribute("adminId")) {
-            adminId = request.getSession().getAttribute("adminId").toString();
-        }
-        if (isLogin && null != adminId && checkPermission((HandlerMethod) handler, adminId)) {
-            logger.info("合格不需要拦截，放行");
-            return true;
+        if(handler instanceof HandlerMethod) {
+            log.info("执行到了preHandle方法");
+            log.info(handler.toString());
+            //获取控制器的·
+            log.info(((HandlerMethod) handler).getBean().getClass().getName());
+            //获取方法名
+            log.info(((HandlerMethod) handler).getMethod().getName());
+            boolean isLogin = null != request.getSession().getAttribute("isLogin");
+            String adminId = null;
+            if (null != request.getSession().getAttribute("adminId")) {
+                adminId = request.getSession().getAttribute("adminId").toString();
+            }
+            if (isLogin && null != adminId && checkPermission((HandlerMethod) handler, adminId)) {
+                log.info("合格不需要拦截，放行");
+                return true;
+            } else {
+                request.getSession().removeAttribute("isLogin");
+                request.getSession().removeAttribute("adminId");
+                response.sendRedirect(request.getContextPath() + "/login");//拦截后跳转的方法
+                log.info("已成功拦截并转发跳转");
+                return false;
+            }
         } else {
-            request.getSession().removeAttribute("isLogin");
-            request.getSession().removeAttribute("adminId");
-            response.sendRedirect(request.getContextPath() + "/login");//拦截后跳转的方法
-            logger.info("已成功拦截并转发跳转");
-            return false;
+            return true;
         }
     }
 
@@ -65,7 +70,7 @@ public class AuthInterceptor implements HandlerInterceptor {
      */
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
-        logger.info("执行了postHandle方法");
+        log.info("执行了postHandle方法");
     }
 
     /*
@@ -73,14 +78,14 @@ public class AuthInterceptor implements HandlerInterceptor {
      */
     @Override
     public void afterCompletion(HttpServletRequest arg0, HttpServletResponse arg1, Object arg2, Exception arg3) throws Exception {
-        logger.info("执行到了afterCompletion方法");
+        log.info("执行到了afterCompletion方法");
     }
 
     private boolean checkPermission(HandlerMethod handler, String adminId) {
         String checkAction = "";
         String classsName = handler.getBean().getClass().getName();
         String methodName = handler.getMethod().getName();
-        logger.info(classsName + methodName);
+        log.info(classsName + methodName);
         boolean ignorePermissionCheck = false;
         try {
             Method[] methods = Class.forName(classsName).getMethods();
@@ -105,7 +110,7 @@ public class AuthInterceptor implements HandlerInterceptor {
             }
 
         } catch (Exception e) {
-            logger.info("{}权限校验异常{}", classsName + methodName, e);
+            log.info("{}权限校验异常{}", classsName + methodName, e);
             return false;
         }
     }

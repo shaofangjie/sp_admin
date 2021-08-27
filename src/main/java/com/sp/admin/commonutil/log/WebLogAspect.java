@@ -1,5 +1,5 @@
 package com.sp.admin.commonutil.log;
-import com.google.gson.Gson;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -50,7 +50,7 @@ public class WebLogAspect {
         // 打印请求的 IP
         log.info("IP             : {}", request.getRemoteAddr());
         // 打印请求入参
-        log.info("Request Args   : {}", new Gson().toJson(joinPoint.getArgs()));
+        log.info("Request Args   : {}", JSONObject.toJSON(joinPoint.getArgs()));
     }
 
     /**
@@ -74,7 +74,7 @@ public class WebLogAspect {
         long startTime = System.currentTimeMillis();
         Object result = proceedingJoinPoint.proceed();
         // 打印出参
-        log.info("Response Args  : {}", new Gson().toJson(result));
+        log.info("Response Args  : {}", JSONObject.toJSON(result));
         // 执行耗时
         log.info("Time-Consuming : {} ms", System.currentTimeMillis() - startTime);
         return result;

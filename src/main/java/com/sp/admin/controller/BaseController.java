@@ -14,8 +14,6 @@ import java.util.List;
 
 public class BaseController {
 
-    private final static Logger logger = LoggerFactory.getLogger(BaseController.class);
-
     @Autowired
     protected RedisUtil redisUtil;
     @Autowired
@@ -39,6 +37,5 @@ public class BaseController {
         });
         return error;
     }
-
 
 }
