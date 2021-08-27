@@ -5,6 +5,7 @@ import cn.hutool.captcha.LineCaptcha;
 import com.alibaba.fastjson.JSONObject;
 import com.sp.admin.commonutil.ResponseCode;
 import com.sp.admin.commonutil.ServerResponse;
+import com.sp.admin.commonutil.log.WebLog;
 import com.sp.admin.forms.LoginForm;
 import com.sp.admin.service.AdminService;
 import lombok.extern.slf4j.Slf4j;
@@ -55,6 +56,7 @@ public class LoginController extends BaseController {
         return loginPage;
     }
 
+    @WebLog()
     @PostMapping("/doLogin")
     public ServerResponse loginHandler(@Valid LoginForm loginForm, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
         log.debug("{}------doLogin", request.getSession().getId());

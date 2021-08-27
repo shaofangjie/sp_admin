@@ -50,7 +50,7 @@ public class WebLogAspect {
         // 打印请求的 IP
         log.info("IP             : {}", request.getRemoteAddr());
         // 打印请求入参
-        log.info("Request Args   : {}", JSONObject.toJSON(joinPoint.getArgs()));
+        log.info("Request Args   : {}", JSONObject.toJSON(joinPoint.getArgs()[0]));
     }
 
     /**
