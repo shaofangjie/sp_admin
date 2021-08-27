@@ -26,4 +26,14 @@
         WHERE a.id = #{adminId}
     </select>
 
+    <select id="selectAdminResourceByAdminIdAndFun" resultMap="adminResources">
+        select
+            resource.id, resource.source_pid, resource.source_type, resource.iconfont, resource.source_name, resource.source_url,
+            resource.source_function,resource.enabled, resource.source_order, resource.is_lock, resource.version, resource.when_created, resource.when_updated
+        from admin a LEFT JOIN admin_role r on a.role_id = r.id
+                     LEFT JOIN admin_role_resources rs on r.id=rs.role_id
+                     LEFT JOIN  admin_resources resource on rs.resource_id = resource.id
+        WHERE a.id = #{adminId} and resource.source_function = #{sourceFunction}
+    </select>
+
 </mapper>

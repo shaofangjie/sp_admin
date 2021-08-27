@@ -113,15 +113,18 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     private boolean hasPermission(String checkAction, String adminId) {
         //TODO数据库获取权限信息
-        List<AdminResourcesEntity> adminResourcesEntitys = adminResourcesMapper.selectAdminResourcesByAdminId(Integer.parseInt(adminId));
+//        List<AdminResourcesEntity> adminResourcesEntitys = adminResourcesMapper.selectAdminResourcesByAdminId(Integer.parseInt(adminId));
+//
+//        for (AdminResourcesEntity adminResources : adminResourcesEntitys) {
+//            if (checkAction.equals(adminResources.getSourceFunction())) {
+//                return true;
+//            }
+//        }
 
-        for (AdminResourcesEntity adminResources : adminResourcesEntitys) {
-            if (checkAction.equals(adminResources.getSourceFunction())) {
-                return true;
-            }
-        }
+        AdminResourcesEntity adminResourcesEntity = adminResourcesMapper.selectAdminResourceByAdminIdAndFun(Integer.parseInt(adminId), checkAction);
 
-        return true;
+        return null != adminResourcesEntity;
+
     }
 
 }

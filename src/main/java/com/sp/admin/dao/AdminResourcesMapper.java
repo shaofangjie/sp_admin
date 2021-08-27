@@ -11,4 +11,6 @@ public interface AdminResourcesMapper {
 
     List<AdminResourcesEntity> selectAdminResourcesByAdminId(@Param("adminId") int adminId);
 
+    AdminResourcesEntity selectAdminResourceByAdminIdAndFun(@Param("adminId") int adminId, @Param("sourceFunction") String sourceFunction);
+
 }
