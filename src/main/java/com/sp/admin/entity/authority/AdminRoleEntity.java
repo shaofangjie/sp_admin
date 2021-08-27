@@ -1,6 +1,6 @@
 package com.sp.admin.entity.authority;
 
-import com.sp.admin.entity.BaseModel;
+import com.sp.admin.entity.BaseEntity;
 
 import java.util.List;
 
@@ -12,13 +12,13 @@ import java.util.List;
  * Time: 2:35 AM
  */
 
-public class AdminRoleModel extends BaseModel {
+public class AdminRoleEntity extends BaseEntity {
 
     private String roleName;
 
-    private List<AdminModel> admin;
+    private List<AdminEntity> admin;
 
-    private List<AdminResourcesModel> adminRoleResources;
+    private List<AdminResourcesEntity> adminRoleResources;
 
     private boolean Lock ; //是否锁定不允许修改,此值只有超级管理员组为1
 
@@ -30,19 +30,19 @@ public class AdminRoleModel extends BaseModel {
         this.roleName = roleName;
     }
 
-    public List<AdminModel> getAdmin() {
+    public List<AdminEntity> getAdmin() {
         return admin;
     }
 
-    public void setAdmin(List<AdminModel> admin) {
+    public void setAdmin(List<AdminEntity> admin) {
         this.admin = admin;
     }
 
-    public List<AdminResourcesModel> getAdminRoleResources() {
+    public List<AdminResourcesEntity> getAdminRoleResources() {
         return adminRoleResources;
     }
 
-    public void setAdminRoleResources(List<AdminResourcesModel> adminRoleResources) {
+    public void setAdminRoleResources(List<AdminResourcesEntity> adminRoleResources) {
         this.adminRoleResources = adminRoleResources;
     }
 

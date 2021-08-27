@@ -1,14 +1,14 @@
 package com.sp.admin.entity.authority;
 
-import com.sp.admin.entity.BaseModel;
+import com.sp.admin.entity.BaseEntity;
 
 import java.util.List;
 
-public class AdminResourcesModel extends BaseModel {
+public class AdminResourcesEntity extends BaseEntity {
 
-    private AdminResourcesModel sourcePid;
+    private Long sourcePid;
 
-    private List<AdminRoleModel> adminRoles;
+    private List<AdminRoleEntity> adminRoles;
 
     private int sourceType; //资源类型 0:目录 1:菜单 2:功能
 
@@ -26,19 +26,19 @@ public class AdminResourcesModel extends BaseModel {
 
     private boolean Lock; //是否锁定不允许修改
 
-    public AdminResourcesModel getSourcePid() {
+    public Long getSourcePid() {
         return sourcePid;
     }
 
-    public void setSourcePid(AdminResourcesModel sourcePid) {
+    public void setSourcePid(Long sourcePid) {
         this.sourcePid = sourcePid;
     }
 
-    public List<AdminRoleModel> getAdminRoles() {
+    public List<AdminRoleEntity> getAdminRoles() {
         return adminRoles;
     }
 
-    public void setAdminRoles(List<AdminRoleModel> adminRoles) {
+    public void setAdminRoles(List<AdminRoleEntity> adminRoles) {
         this.adminRoles = adminRoles;
     }
 

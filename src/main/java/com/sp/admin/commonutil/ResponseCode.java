@@ -1,6 +1,13 @@
 package com.sp.admin.commonutil;
 
 public enum ResponseCode {
+
+    CAPTCHA_FAILED(0, "验证码错误"),
+    USERNAME_PWD_FAILED(0, "用户名或密码错误"),
+    LOGIN_FAILED(0, "登录失败,请重试."),
+    USER_DISABLE(0, "账号已禁用"),
+    LOGIN_SUCCESS(1, "登录成功"),
+
     SUCCESS(200,"成功"),
     ERROR(1,"错误请求"),
     NEED_REGISTER(10,"请注册后登录!"),

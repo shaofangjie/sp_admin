@@ -1,6 +1,6 @@
 package com.sp.admin.entity.authority;
 
-import com.sp.admin.entity.BaseModel;
+import com.sp.admin.entity.BaseEntity;
 
 /**
  * Created with IntelliJ IDEA.
@@ -10,7 +10,7 @@ import com.sp.admin.entity.BaseModel;
  * Time: 2:47 AM
  */
 
-public class AdminModel extends BaseModel {
+public class AdminEntity extends BaseEntity {
 
     private String userName;
 
@@ -18,7 +18,7 @@ public class AdminModel extends BaseModel {
 
     private String nickName;
 
-    private AdminRoleModel adminRole;
+    private AdminRoleEntity adminRole;
 
     private boolean enabled;
 
@@ -48,11 +48,11 @@ public class AdminModel extends BaseModel {
         this.nickName = nickName;
     }
 
-    public AdminRoleModel getAdminRole() {
+    public AdminRoleEntity getAdminRole() {
         return adminRole;
     }
 
-    public void setAdminRole(AdminRoleModel adminRole) {
+    public void setAdminRole(AdminRoleEntity adminRole) {
         this.adminRole = adminRole;
     }
 

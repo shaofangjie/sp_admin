@@ -7,7 +7,7 @@ import java.sql.Timestamp;
  * Created by shaofangjie on 5/8/18.
  */
 
-public class BaseModel implements Serializable {
+public class BaseEntity implements Serializable {
     private Long id;
 
     private Long version;

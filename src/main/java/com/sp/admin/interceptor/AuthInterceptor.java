@@ -3,6 +3,8 @@ package com.sp.admin.interceptor;
 import cn.hutool.core.util.StrUtil;
 import com.sp.admin.annotation.authentication.IgnorePermissionCheck;
 import com.sp.admin.annotation.authentication.SpecifiedPermission;
+import com.sp.admin.dao.AdminResourcesMapper;
+import com.sp.admin.entity.authority.AdminResourcesEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.List;
 
 @Component
 public class AuthInterceptor implements HandlerInterceptor {
@@ -24,6 +27,8 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Autowired
     ConfigurableApplicationContext context;
+    @Autowired
+    AdminResourcesMapper adminResourcesMapper;
 
     /*
      * 进入controller层之前拦截请求
@@ -39,10 +44,16 @@ public class AuthInterceptor implements HandlerInterceptor {
         //获取方法名
         logger.info(((HandlerMethod) handler).getMethod().getName());
         boolean isLogin = null != request.getSession().getAttribute("isLogin");
-        if (isLogin && checkPermission((HandlerMethod) handler)) {
+        String adminId = null;
+        if (null != request.getSession().getAttribute("adminId")) {
+            adminId = request.getSession().getAttribute("adminId").toString();
+        }
+        if (isLogin && null != adminId && checkPermission((HandlerMethod) handler, adminId)) {
             logger.info("合格不需要拦截，放行");
             return true;
         } else {
+            request.getSession().removeAttribute("isLogin");
+            request.getSession().removeAttribute("adminId");
             response.sendRedirect(request.getContextPath() + "/login");//拦截后跳转的方法
             logger.info("已成功拦截并转发跳转");
             return false;
@@ -66,7 +77,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         logger.info("执行到了afterCompletion方法");
     }
 
-    private boolean checkPermission(HandlerMethod handler) {
+    private boolean checkPermission(HandlerMethod handler, String adminId) {
         String checkAction = "";
         String classsName = handler.getBean().getClass().getName();
         String methodName = handler.getMethod().getName();
@@ -91,17 +102,24 @@ public class AuthInterceptor implements HandlerInterceptor {
             if (ignorePermissionCheck) {
                 return true;
             } else {
-                return !StrUtil.hasBlank(checkAction) && hasPermission(checkAction);
+                return !StrUtil.hasBlank(checkAction) && hasPermission(checkAction, adminId);
             }
 
         } catch (Exception e) {
-            logger.info("%s权限校验异常%s", classsName + methodName, e);
+            logger.info("{}权限校验异常{}", classsName + methodName, e);
             return false;
         }
     }
 
-    private boolean hasPermission(String checkAction) {
+    private boolean hasPermission(String checkAction, String adminId) {
         //TODO数据库获取权限信息
+        List<AdminResourcesEntity> adminResourcesEntitys = adminResourcesMapper.selectAdminResourcesByAdminId(Integer.parseInt(adminId));
+
+        for (AdminResourcesEntity adminResources : adminResourcesEntitys) {
+            if (checkAction.equals(adminResources.getSourceFunction())) {
+                return true;
+            }
+        }
 
         return true;
     }

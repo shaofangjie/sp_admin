@@ -1,5 +1,6 @@
 package com.sp.admin.interceptor;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -15,6 +16,10 @@ public class InterceptorConfig implements WebMvcConfigurer {
      * addPathPatterns():添加需要拦截的路径
      * excludePathPatterns():添加不需要拦截的路径
      */
+
+    @Autowired
+    AuthInterceptor authInterceptor;
+
     //注册拦截器
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -24,6 +29,6 @@ public class InterceptorConfig implements WebMvcConfigurer {
         list.add("/doLogin");
         list.add("/captcha");
         list.add("/asset/**");
-        registry.addInterceptor(new AuthInterceptor()).addPathPatterns("/**").excludePathPatterns(list);
+        registry.addInterceptor(authInterceptor).addPathPatterns("/**").excludePathPatterns(list);
     }
 }

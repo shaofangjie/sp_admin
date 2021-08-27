@@ -18,7 +18,7 @@ import java.util.Map;
 public class DruidConfig {
 
     //加载application.yaml中的Druid配置
-    @ConfigurationProperties(prefix = "spring.datasource")
+    @ConfigurationProperties(prefix = "spring.datasource.druid")
     @Bean
     public DataSource druid(){
         return  new DruidDataSource();

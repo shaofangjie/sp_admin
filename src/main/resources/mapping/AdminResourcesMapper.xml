@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sp.admin.dao.AdminResourcesMapper">
+    <resultMap id="adminResources" type="com.sp.admin.entity.authority.AdminResourcesEntity">
+        <result column="id" jdbcType="BIGINT" property="id" />
+        <result column="source_pid" jdbcType="BIGINT" property="sourcePid" />
+        <result column="source_type" jdbcType="INTEGER" property="sourceType" />
+        <result column="iconfont" jdbcType="VARCHAR" property="iconfont" />
+        <result column="source_name" jdbcType="VARCHAR" property="sourceName" />
+        <result column="source_url" jdbcType="VARCHAR" property="sourceUrl" />
+        <result column="source_function" jdbcType="VARCHAR" property="sourceFunction" />
+        <result column="enabled" jdbcType="TINYINT" property="enabled" />
+        <result column="source_order" jdbcType="INTEGER" property="sourceOrder" />
+        <result column="is_lock" jdbcType="TINYINT" property="Lock" />
+        <result column="version" jdbcType="BIGINT" property="version" />
+        <result column="when_created" jdbcType="TIMESTAMP" property="whenCreated" />
+        <result column="when_updated" jdbcType="TIMESTAMP" property="whenUpdated" />
+    </resultMap>
+    <select id="selectAdminResourcesByAdminId" parameterType="java.lang.Integer" resultMap="adminResources">
+        select
+            resource.id, resource.source_pid, resource.source_type, resource.iconfont, resource.source_name, resource.source_url,
+            resource.source_function,resource.enabled, resource.source_order, resource.is_lock, resource.version, resource.when_created, resource.when_updated
+        from admin a LEFT JOIN admin_role r on a.role_id = r.id
+                     LEFT JOIN admin_role_resources rs on r.id=rs.role_id
+                     LEFT JOIN  admin_resources resource on rs.resource_id = resource.id
+        WHERE a.id = #{adminId}
+    </select>
+
+</mapper>

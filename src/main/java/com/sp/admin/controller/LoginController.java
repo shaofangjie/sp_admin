@@ -3,10 +3,13 @@ package com.sp.admin.controller;
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.LineCaptcha;
 import com.alibaba.fastjson.JSONObject;
+import com.sp.admin.commonutil.ResponseCode;
 import com.sp.admin.commonutil.ServerResponse;
 import com.sp.admin.forms.LoginForm;
+import com.sp.admin.service.AdminService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +25,9 @@ import javax.validation.Valid;
 public class LoginController extends BaseController {
 
     private final static Logger logger = LoggerFactory.getLogger(LoginController.class);
+
+    @Autowired
+    AdminService adminService;
 
     @GetMapping("/captcha")
     public void captcha(HttpServletRequest request, HttpServletResponse response) {
@@ -41,21 +47,39 @@ public class LoginController extends BaseController {
     @GetMapping("/login")
     public ModelAndView loginIndex(HttpSession session) {
         ModelAndView loginPage = new ModelAndView();
-        logger.info("----------" + session.getId());
-        loginPage.setViewName("login.btl");
+        if (null != session.getAttribute("isLogin")) {
+            loginPage.setViewName("redirect:/");
+        } else {
+            loginPage.setViewName("login.btl");
+        }
         return loginPage;
     }
 
     @PostMapping("/doLogin")
-    public ServerResponse loginHandler(@Valid LoginForm loginForm, BindingResult bindingResult, HttpServletResponse response) {
+    public ServerResponse loginHandler(@Valid LoginForm loginForm, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
         if (bindingResult.hasErrors()) {
             response.setStatus(400);
             JSONObject errors = getViolationErrMsg(bindingResult.getFieldErrors());
             return ServerResponse.createByErrorMessage("参数错误", 1, errors);
         }
 
-        //TODO 实现登录逻辑
-        return ServerResponse.createBySuccess();
+        ResponseCode responseCode = adminService.getAdminInfoByUserName(loginForm, request, this.isDev());
+
+        switch (responseCode) {
+            case LOGIN_SUCCESS:
+                return ServerResponse.createBySuccessMessage("登录成功");
+            case CAPTCHA_FAILED:
+                return ServerResponse.createByErrorMessage("验证码错误");
+            case USER_DISABLE:
+                return ServerResponse.createByErrorMessage("账号已禁用");
+            case LOGIN_FAILED:
+                return ServerResponse.createByErrorMessage("登录失败,请重试.");
+            case USERNAME_PWD_FAILED:
+                return ServerResponse.createByErrorMessage("用户名或密码错误");
+            default:
+                response.setStatus(400);
+                return ServerResponse.createByErrorMessage("登录失败,请重试.");
+        }
 
     }
 
