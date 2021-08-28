@@ -30,7 +30,14 @@ public class MainController extends BaseController{
         mainPage.setViewName("main.btl");
 
         return mainPage;
+    }
 
+    @IgnorePermissionCheck()
+    @GetMapping("/dashboard")
+    public ModelAndView dashBoard() {
+        ModelAndView page = new ModelAndView();
+        page.setViewName("dashboard.btl");
+        return page;
     }
 
 }
