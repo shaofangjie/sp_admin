@@ -18,12 +18,31 @@
             <result column="role_version" jdbcType="BIGINT" property="version" />
             <result column="role_when_created" jdbcType="TIMESTAMP" property="whenCreated" />
             <result column="role_when_updated" jdbcType="TIMESTAMP" property="whenUpdated" />
+            <collection ofType="com.sp.admin.entity.authority.AdminResourcesEntity" property="adminRoleResources">
+                <result column="source_id" jdbcType="BIGINT" property="id" />
+                <result column="source_pid" jdbcType="BIGINT" property="sourcePid" />
+                <result column="source_type" jdbcType="INTEGER" property="sourceType" />
+                <result column="iconfont" jdbcType="VARCHAR" property="iconfont" />
+                <result column="source_name" jdbcType="VARCHAR" property="sourceName" />
+                <result column="source_url" jdbcType="VARCHAR" property="sourceUrl" />
+                <result column="source_function" jdbcType="VARCHAR" property="sourceFunction" />
+                <result column="source_enabled" jdbcType="TINYINT" property="enabled" />
+                <result column="source_order" jdbcType="INTEGER" property="sourceOrder" />
+                <result column="source_is_lock" jdbcType="TINYINT" property="Lock" />
+                <result column="source_version" jdbcType="BIGINT" property="version" />
+                <result column="source_when_created" jdbcType="TIMESTAMP" property="whenCreated" />
+                <result column="source_when_updated" jdbcType="TIMESTAMP" property="whenUpdated" />
+            </collection>
         </association>
     </resultMap>
     <select id="selectAdminInfoByUserName" resultMap="adminInfo">
-        select a.id, a.user_name, a.`password`, a.nick_name, a.enabled, a.is_lock, a.version, a.when_created, a.when_updated,
-               r.id role_id, r.role_name, r.is_lock role_is_lock, r.version role_version, r.when_created role_when_created, r.when_updated role_when_updated
+        select a.id, a.user_name, a.`password`, a.enabled, a.is_lock, a.version, a.when_created, a.when_updated,
+               r.id role_id, r.role_name, r.is_lock role_is_lock, r.version role_version, r.when_created role_when_created, r.when_updated role_when_updated,
+               resource.id source_id, resource.source_pid, resource.source_type, resource.iconfont, resource.source_name, resource.source_url,
+               resource.source_function,resource.enabled source_enabled, resource.source_order, resource.is_lock source_is_lock, resource.version source_version, resource.when_created source_when_created, resource.when_updated source_when_updated
         from admin a LEFT JOIN admin_role r on a.role_id = r.id
+                     LEFT JOIN admin_role_resources rs on r.id=rs.role_id
+                     LEFT JOIN  admin_resources resource on rs.resource_id = resource.id
         where a.user_name = #{userName}
     </select>
 

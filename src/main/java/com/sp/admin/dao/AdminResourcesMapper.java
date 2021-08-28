@@ -9,8 +9,8 @@ import java.util.List;
 @Mapper
 public interface AdminResourcesMapper {
 
-    List<AdminResourcesEntity> selectAdminResourcesByAdminId(@Param("adminId") int adminId);
+    List<AdminResourcesEntity> selectAdminResourcesByAdminId(@Param("adminId") long adminId);
 
-    AdminResourcesEntity selectAdminResourceByAdminIdAndFun(@Param("adminId") int adminId, @Param("sourceFunction") String sourceFunction);
+    AdminResourcesEntity selectAdminResourceByAdminIdAndFun(@Param("adminId") long adminId, @Param("sourceFunction") String sourceFunction);
 
 }

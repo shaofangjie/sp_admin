@@ -3,18 +3,17 @@ package com.sp.admin.interceptor;
 import cn.hutool.core.util.StrUtil;
 import com.sp.admin.annotation.authentication.IgnorePermissionCheck;
 import com.sp.admin.annotation.authentication.SpecifiedPermission;
+import com.sp.admin.commonutil.RedisUtil;
 import com.sp.admin.dao.AdminResourcesMapper;
+import com.sp.admin.entity.authority.AdminEntity;
 import com.sp.admin.entity.authority.AdminResourcesEntity;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,9 +25,11 @@ import java.lang.reflect.Method;
 public class AuthInterceptor implements HandlerInterceptor {
 
     @Autowired
-    ConfigurableApplicationContext context;
+    private RedisUtil redisUtil;
     @Autowired
-    AdminResourcesMapper adminResourcesMapper;
+    private ConfigurableApplicationContext context;
+    @Autowired
+    private AdminResourcesMapper adminResourcesMapper;
 
     /*
      * 进入controller层之前拦截请求
@@ -37,7 +38,7 @@ public class AuthInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
-        if(handler instanceof HandlerMethod) {
+        if (handler instanceof HandlerMethod) {
             log.info("执行到了preHandle方法");
             log.info(handler.toString());
             //获取控制器的·
@@ -55,6 +56,7 @@ public class AuthInterceptor implements HandlerInterceptor {
             } else {
                 request.getSession().removeAttribute("isLogin");
                 request.getSession().removeAttribute("adminId");
+                redisUtil.del("loginAdmin");
                 response.sendRedirect(request.getContextPath() + "/login");//拦截后跳转的方法
                 log.info("已成功拦截并转发跳转");
                 return false;
@@ -70,7 +72,14 @@ public class AuthInterceptor implements HandlerInterceptor {
      */
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
-        log.info("执行了postHandle方法");
+        if (handler instanceof HandlerMethod) {
+            AdminEntity loginAdmin = (AdminEntity)redisUtil.get("loginAdmin");
+            if (null != loginAdmin) {
+                modelAndView.addObject("admin", loginAdmin);
+            }
+//        context.renderArg("adminResourcesFunList", adminResourcesFunList);
+            log.info("执行了postHandle方法");
+        }
     }
 
     /*
@@ -117,7 +126,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     private boolean hasPermission(String checkAction, String adminId) {
 
-        AdminResourcesEntity adminResourcesEntity = adminResourcesMapper.selectAdminResourceByAdminIdAndFun(Integer.parseInt(adminId), checkAction);
+        AdminResourcesEntity adminResourcesEntity = adminResourcesMapper.selectAdminResourceByAdminIdAndFun(Long.parseLong(adminId), checkAction);
 
         return null != adminResourcesEntity;
 

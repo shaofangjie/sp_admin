@@ -9,8 +9,6 @@ import com.sp.admin.commonutil.log.WebLog;
 import com.sp.admin.forms.LoginForm;
 import com.sp.admin.service.AdminService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -66,7 +64,7 @@ public class LoginController extends BaseController {
             return ServerResponse.createByErrorMessage("参数错误", 1, errors);
         }
 
-        ResponseCode responseCode = adminService.getAdminInfoByUserName(loginForm, request, this.isDev());
+        ResponseCode responseCode = adminService.AdminLogin(loginForm, request, this.isDev());
 
         switch (responseCode) {
             case LOGIN_SUCCESS:

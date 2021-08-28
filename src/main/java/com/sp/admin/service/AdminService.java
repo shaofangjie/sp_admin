@@ -21,7 +21,7 @@ public class AdminService {
     private AdminMapper adminMapper;
 
     @Transactional
-    public ResponseCode getAdminInfoByUserName(LoginForm loginForm, HttpServletRequest request, boolean isDev) {
+    public ResponseCode AdminLogin(LoginForm loginForm, HttpServletRequest request, boolean isDev) {
 
         try{
             if (!isDev && !loginForm.getCaptcha().equals(redisUtil.get("captcha-" + request.getSession().getId()))) {
@@ -33,6 +33,7 @@ public class AdminService {
             } else if(DigestUtil.sha256Hex(loginForm.getPassword().trim()).equals(admin.getPassword())) {
                 request.getSession().setAttribute("isLogin", true);
                 request.getSession().setAttribute("adminId", admin.getId());
+                redisUtil.set("loginAdmin", admin);
                 return ResponseCode.LOGIN_SUCCESS;
             }
             if (!admin.isEnabled()){

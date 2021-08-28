@@ -16,7 +16,7 @@
         <result column="when_created" jdbcType="TIMESTAMP" property="whenCreated" />
         <result column="when_updated" jdbcType="TIMESTAMP" property="whenUpdated" />
     </resultMap>
-    <select id="selectAdminResourcesByAdminId" parameterType="java.lang.Integer" resultMap="adminResources">
+    <select id="selectAdminResourcesByAdminId" parameterType="java.lang.Long" resultMap="adminResources">
         select
             resource.id, resource.source_pid, resource.source_type, resource.iconfont, resource.source_name, resource.source_url,
             resource.source_function,resource.enabled, resource.source_order, resource.is_lock, resource.version, resource.when_created, resource.when_updated
