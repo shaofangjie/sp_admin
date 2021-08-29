@@ -1,4 +1,4 @@
-package com.sp.admin.commonutil;
+package com.sp.admin.commonutil.response;
 
 public enum ResponseCode {
 

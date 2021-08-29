@@ -1,4 +1,4 @@
-package com.sp.admin.commonutil;
+package com.sp.admin.commonutil.response;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonSerialize;

@@ -2,7 +2,7 @@ package com.sp.admin.service;
 
 import cn.hutool.crypto.digest.DigestUtil;
 import com.sp.admin.commonutil.RedisUtil;
-import com.sp.admin.commonutil.ResponseCode;
+import com.sp.admin.commonutil.response.ResponseCode;
 import com.sp.admin.dao.AdminMapper;
 import com.sp.admin.entity.authority.AdminEntity;
 import com.sp.admin.forms.LoginForm;

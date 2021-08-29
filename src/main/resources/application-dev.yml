@@ -5,6 +5,18 @@ server:
     session:
       timeout: PT2H
       # Duration转换字符串方式，默认为正，负以-开头，紧接着P，（字母不区分大小写）D ：天 T：天和小时之间的分隔符 H ：小时 M：分钟 S：秒 每个单位都必须是数字，且时分秒顺序不能乱。例：PT2H就是2个小时，7200秒。
+  undertow:
+    max-http-post-size: 0
+    threads:
+      io: 4
+      worker: 20
+    buffer-size: 1024
+    accesslog:
+      dir: logs
+      enabled: false
+      pattern: common
+      prefix: access_log
+      suffix: log
 spring:
   #redis
   redis:
