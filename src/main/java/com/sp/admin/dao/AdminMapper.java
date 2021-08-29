@@ -16,4 +16,6 @@ public interface AdminMapper {
             , @Param("roleId") long roleId
     );
 
+    Long insertAdmin(AdminEntity admin);
+
 }

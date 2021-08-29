@@ -13,4 +13,9 @@
         select id, role_name, is_lock, version, when_created, when_updated
         from admin_role
     </select>
+    <select id="selectRoleById" resultMap="allRoles">
+        select id, role_name, is_lock, version, when_created, when_updated
+        from admin_role
+        where id = #{roleId}
+    </select>
 </mapper>

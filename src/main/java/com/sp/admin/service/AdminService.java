@@ -1,6 +1,8 @@
 package com.sp.admin.service;
 
+import cn.hutool.core.date.DateTime;
 import cn.hutool.crypto.digest.DigestUtil;
+import com.alibaba.druid.sql.visitor.functions.Now;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.sp.admin.commonutil.redis.RedisUtil;
@@ -10,12 +12,14 @@ import com.sp.admin.dao.AdminRoleMapper;
 import com.sp.admin.entity.authority.AdminEntity;
 import com.sp.admin.entity.authority.AdminRoleEntity;
 import com.sp.admin.forms.LoginForm;
+import com.sp.admin.forms.authority.AdminAddForm;
 import com.sp.admin.forms.authority.AdminSearchForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Service
@@ -68,5 +72,44 @@ public class AdminService {
 
         return new PageInfo<>(adminEntityList);
     }
+
+    public ResponseCode adminSave(AdminAddForm adminAddForm) {
+
+        AdminEntity adminEntity = adminMapper.selectAdminInfoByUserName(adminAddForm.getUserName());
+
+        AdminRoleEntity adminRoleEntity = adminRoleMapper.selectRoleById(adminAddForm.getRoleId());
+
+        if (null == adminRoleEntity) {
+            return ResponseCode.ROLE_NOT_EXIST;
+        }
+
+        if (null != adminEntity) {
+            return ResponseCode.USER_EXIST;
+        } else {
+            adminEntity = new AdminEntity();
+            adminEntity.setUserName(adminAddForm.getUserName());
+            adminEntity.setNickName(adminAddForm.getNickName());
+            adminEntity.setRoleId(Long.parseLong(adminAddForm.getRoleId()));
+            adminEntity.setLock(false);
+            adminEntity.setEnabled(null != adminAddForm.getEnable() && "1".equals(adminAddForm.getEnable()));
+            adminEntity.setPassword(DigestUtil.sha256Hex(adminAddForm.getPassword().trim()));
+            adminEntity.setVersion(1L);
+            adminEntity.setWhenCreated(DateTime.now().toTimestamp());
+            adminEntity.setWhenUpdated(DateTime.now().toTimestamp());
+
+            adminMapper.insertAdmin(adminEntity);
+
+            Long adminId = adminEntity.getId();
+
+            if (0 != adminId) {
+                return ResponseCode.ADD_SUCCESS;
+            } else {
+                return ResponseCode.ADD_FAILED;
+            }
+        }
+
+    }
+
+
 
 }

@@ -13,7 +13,7 @@
         <result column="when_updated" jdbcType="TIMESTAMP" property="whenUpdated" />
         <association property="adminRole" javaType="com.sp.admin.entity.authority.AdminRoleEntity">
             <result column="role_id" jdbcType="BIGINT" property="id" />
-            <result column="user_name" jdbcType="VARCHAR" property="roleName" />
+            <result column="role_name" jdbcType="VARCHAR" property="roleName" />
             <result column="role_is_lock" jdbcType="TINYINT" property="Lock" />
             <result column="role_version" jdbcType="BIGINT" property="version" />
             <result column="role_when_created" jdbcType="TIMESTAMP" property="whenCreated" />
@@ -58,7 +58,7 @@
         <result column="when_updated" jdbcType="TIMESTAMP" property="whenUpdated" />
         <association property="adminRole" javaType="com.sp.admin.entity.authority.AdminRoleEntity">
             <result column="role_id" jdbcType="BIGINT" property="id" />
-            <result column="user_name" jdbcType="VARCHAR" property="roleName" />
+            <result column="role_name" jdbcType="VARCHAR" property="roleName" />
             <result column="role_is_lock" jdbcType="TINYINT" property="Lock" />
             <result column="role_version" jdbcType="BIGINT" property="version" />
             <result column="role_when_created" jdbcType="TIMESTAMP" property="whenCreated" />
@@ -81,4 +81,8 @@
         </if>
     </select>
 
+    <insert id="insertAdmin" useGeneratedKeys="true" keyProperty="id" parameterType="com.sp.admin.entity.authority.AdminEntity">
+        insert into admin(user_name, nick_name, role_id, `password`, enabled, is_lock, version, when_created, when_updated)
+        values(#{userName}, #{nickName}, #{roleId}, #{password}, #{enabled}, #{Lock}, #{version}, #{whenCreated}, #{whenUpdated})
+    </insert>
 </mapper>

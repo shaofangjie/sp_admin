@@ -20,9 +20,19 @@ public class AdminEntity extends BaseEntity {
 
     private AdminRoleEntity adminRole;
 
+    private Long roleId;
+
     private boolean enabled;
 
     private boolean Lock; //是否锁定不允许修改
+
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
+    }
 
     public String getUserName() {
         return userName;

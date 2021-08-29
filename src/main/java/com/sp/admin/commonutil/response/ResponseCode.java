@@ -8,6 +8,11 @@ public enum ResponseCode {
     USER_DISABLE(0, "账号已禁用"),
     LOGIN_SUCCESS(1, "登录成功"),
 
+    ADD_FAILED(0, "添加失败"),
+    ADD_SUCCESS(1, "添加成功"),
+    USER_EXIST(0, "用户已存在"),
+    ROLE_NOT_EXIST(0, "角色不存在"),
+
     SUCCESS(200,"成功"),
     ERROR(1,"错误请求"),
     NEED_REGISTER(10,"请注册后登录!"),

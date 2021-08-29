@@ -34,11 +34,11 @@ layui.use(['form', 'jquery', 'admin'], function () {
     form.on('submit(add)', function (data) {
         $.ajaxSetup({
             data:{
-                "adminAddForm.password": hex_md5($("#password").val())
+                "password": hex_md5($("#password").val())
             }
         });
         $.ajax({
-            url: '/authority/Admin/add',
+            url: '/authority/Admin/doAdd',
             method: 'POST',
             data: data.field,
             success: function (data) {
