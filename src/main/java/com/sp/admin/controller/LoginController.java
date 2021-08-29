@@ -44,14 +44,13 @@ public class LoginController extends BaseController {
     }
 
     @GetMapping("/login")
-    public ModelAndView loginIndex(HttpSession session) {
-        ModelAndView loginPage = new ModelAndView();
+    public ModelAndView loginIndex(HttpSession session, ModelAndView modelAndView) {
         if (null != session.getAttribute("isLogin")) {
-            loginPage.setViewName("redirect:/");
+            modelAndView.setViewName("redirect:/");
         } else {
-            loginPage.setViewName("login.btl");
+            modelAndView.setViewName("login.btl");
         }
-        return loginPage;
+        return modelAndView;
     }
 
     @WebLog()
@@ -83,13 +82,5 @@ public class LoginController extends BaseController {
         }
 
     }
-
-    @GetMapping("/test")
-    public ModelAndView testPage() {
-        ModelAndView testPage = new ModelAndView();
-        testPage.setViewName("login.btl");
-        return testPage;
-    }
-
 
 }

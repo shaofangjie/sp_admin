@@ -25,12 +25,12 @@ layui.use(['form', 'table', 'jquery', 'admin', 'layer'], function () {
     });
 
     var queryParams = function () {
-        var param = {adminSearchForm: {}};
-        param.adminSearchForm.orderColumn = "whenCreated";
-        param.adminSearchForm.orderDir = "asc";
-        param.adminSearchForm.userName = $("#userName").val();
-        param.adminSearchForm.nickName = $("#nickName").val();
-        param.adminSearchForm.roleId = $("#roleId").val();
+        var param = {};
+        param.orderColumn = "whenCreated";
+        param.orderDir = "asc";
+        param.userName = $("#userName").val();
+        param.nickName = $("#nickName").val();
+        param.roleId = $("#roleId").val();
         return param;
     };
 

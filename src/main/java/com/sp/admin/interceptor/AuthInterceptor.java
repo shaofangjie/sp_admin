@@ -3,7 +3,7 @@ package com.sp.admin.interceptor;
 import cn.hutool.core.util.StrUtil;
 import com.sp.admin.annotation.authentication.IgnorePermissionCheck;
 import com.sp.admin.annotation.authentication.SpecifiedPermission;
-import com.sp.admin.commonutil.RedisUtil;
+import com.sp.admin.commonutil.redis.RedisUtil;
 import com.sp.admin.dao.AdminResourcesMapper;
 import com.sp.admin.entity.authority.AdminEntity;
 import com.sp.admin.entity.authority.AdminResourcesEntity;
@@ -19,6 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -74,10 +76,14 @@ public class AuthInterceptor implements HandlerInterceptor {
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
         if (handler instanceof HandlerMethod) {
             AdminEntity loginAdmin = (AdminEntity)redisUtil.get("loginAdmin");
-            if (null != loginAdmin) {
+            if (null != loginAdmin && null != modelAndView) {
                 modelAndView.addObject("admin", loginAdmin);
+                List<String> adminResourcesFunList = new ArrayList<>();
+                for (AdminResourcesEntity adminResources : loginAdmin.getAdminRole().getAdminRoleResources()) {
+                    adminResourcesFunList.add(adminResources.getSourceFunction());
+                }
+                modelAndView.addObject("adminResourcesFunList", adminResourcesFunList);
             }
-//        context.renderArg("adminResourcesFunList", adminResourcesFunList);
             log.info("执行了postHandle方法");
         }
     }

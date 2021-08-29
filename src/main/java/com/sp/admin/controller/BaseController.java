@@ -1,12 +1,9 @@
 package com.sp.admin.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.sp.admin.commonutil.RedisUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.sp.admin.commonutil.redis.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.validation.FieldError;
 
@@ -36,6 +33,18 @@ public class BaseController {
             error.put(fieldError.getField(), fieldError.getDefaultMessage());
         });
         return error;
+    }
+
+    public JSONObject buildTableResult(int code, String msg, long count, List<Object> pageData) {
+
+        JSONObject result = new JSONObject();
+        result.put("data", pageData);
+        result.put("count", count);
+        result.put("code", code);
+        result.put("msg", msg);
+
+        return result;
+
     }
 
 }

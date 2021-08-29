@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @RestController
 public class MainController extends BaseController{
@@ -21,8 +20,7 @@ public class MainController extends BaseController{
 
     @IgnorePermissionCheck()
     @RequestMapping(value={"/","/index"}, method = RequestMethod.GET)
-    public ModelAndView home(HttpServletRequest request, HttpServletResponse response) {
-        ModelAndView mainPage = new ModelAndView();
+    public ModelAndView home(HttpServletRequest request, ModelAndView mainPage) {
 
         JSONObject menuList = adminResourcesService.getMenuJsonByAdminId(Long.parseLong(request.getSession().getAttribute("adminId").toString()));
 
@@ -34,10 +32,9 @@ public class MainController extends BaseController{
 
     @IgnorePermissionCheck()
     @GetMapping("/dashboard")
-    public ModelAndView dashBoard() {
-        ModelAndView page = new ModelAndView();
-        page.setViewName("dashboard.btl");
-        return page;
+    public ModelAndView dashBoard(ModelAndView modelAndView) {
+        modelAndView.setViewName("dashboard.btl");
+        return modelAndView;
     }
 
 }
