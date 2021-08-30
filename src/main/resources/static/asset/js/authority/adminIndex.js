@@ -69,7 +69,7 @@ layui.use(['form', 'table', 'jquery', 'admin', 'layer'], function () {
         var dataId = data.id;
         console.log(layEvent + '-----' + dataId);
         if (layEvent === 'edit') {
-            addPage('修改管理员', '/authority/Admin/edit/' + dataId);
+            addPage('修改管理员', '/authority/Admin/edit/?adminId=' + dataId);
         }
         if (layEvent === 'del') {
             layer.open({

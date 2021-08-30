@@ -112,14 +112,11 @@
         <if test="enabled != null">
             ,enabled = #{enabled}
         </if>
-        <if test="is_lock != null">
-            ,is_lock = #{Lock}
-        </if>
         <if test="whenUpdated != null">
             ,when_updated = #{whenUpdated}
         </if>
         where
-        version=#{version}
+        version=#{version} and is_lock = false
         <if test="id != null">
             and  id=#{id}
         </if>

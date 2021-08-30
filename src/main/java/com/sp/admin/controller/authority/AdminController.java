@@ -9,6 +9,7 @@ import com.sp.admin.commonutil.response.ServerResponse;
 import com.sp.admin.controller.BaseController;
 import com.sp.admin.entity.authority.AdminEntity;
 import com.sp.admin.forms.authority.AdminAddForm;
+import com.sp.admin.forms.authority.AdminEditPageForm;
 import com.sp.admin.forms.authority.AdminSearchForm;
 import com.sp.admin.results.AdminResult;
 import com.sp.admin.service.AdminService;
@@ -104,13 +105,24 @@ public class AdminController extends BaseController {
 
     }
 
-    @GetMapping("/edit/{adminId}")
+    @GetMapping("/edit")
     @SpecifiedPermission("authority.AdminController.edit")
-    public ModelAndView edit(@PathVariable(name = "adminId") Long adminId, ModelAndView modelAndView) {
+    public ModelAndView edit(@Valid AdminEditPageForm adminEditPageForm, BindingResult bindingResult, HttpServletResponse response, ModelAndView modelAndView) {
+
+        if (bindingResult.hasErrors()) {
+            response.setStatus(400);
+            return modelAndView;
+        }
+
+        AdminEntity adminEntity = adminService.getAdminInfo(Long.parseLong(adminEditPageForm.getAdminId()));
+
+        if (null == adminEntity) {
+            response.setStatus(404);
+            return modelAndView;
+        }
 
         modelAndView.addObject("adminRoleList", adminService.getAllRoleList());
-        modelAndView.addObject("adminInfo", adminService.getAdminInfo(adminId));
-
+        modelAndView.addObject("adminInfo", adminEntity);
         modelAndView.setViewName("/authority/adminEdit.btl");
 
         return modelAndView;

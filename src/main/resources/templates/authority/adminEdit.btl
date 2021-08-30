@@ -14,8 +14,8 @@
         <div class="layui-form-item">
             <label class="layui-form-label">用户名</label>
             <div class="layui-input-block">
-                <input type="hidden" name="adminId" value="${@admin.getId()}" >
-                <input type="text" name="userName" placeholder="请输入用户名" autocomplete="off" class="layui-input layui-disabled" lay-verify="userName" value="${@admin.getUserName()}" disabled>
+                <input type="hidden" name="adminId" value="${@adminInfo.getId()}" >
+                <input type="text" name="userName" placeholder="请输入用户名" autocomplete="off" class="layui-input layui-disabled" lay-verify="userName" value="${@adminInfo.getUserName()}" disabled>
             </div>
         </div>
         <div class="layui-form-item">
@@ -27,7 +27,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">昵称</label>
             <div class="layui-input-block">
-                <input type="text" name="nickName" placeholder="请输入昵称" autocomplete="off" class="layui-input" lay-verify="nickName" value="${@admin.getNickName()}">
+                <input type="text" name="nickName" placeholder="请输入昵称" autocomplete="off" class="layui-input" lay-verify="nickName" value="${@adminInfo.getNickName()}">
             </div>
         </div>
         <div class="layui-form-item">
@@ -36,7 +36,7 @@
                 <select name="roleId">
                     <%
                     for(role in adminRoleList){
-                    if(@role.getId() == @admin.getAdminRole().getId()) {
+                    if(@role.getId() == @adminInfo.getAdminRole().getId()) {
                     %>
                     <option value="${@role.getId()}" selected>${@role.getRoleName()}</option>
                     <% } else {%>
@@ -48,7 +48,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">状态</label>
             <div class="layui-input-block">
-                <input type="checkbox" name="enable" lay-skin="switch" lay-text="启用|停用" <%if(@admin.isEnabled()){%> checked <%}%> value="1">
+                <input type="checkbox" name="enable" lay-skin="switch" lay-text="启用|停用" <%if(@adminInfo.isEnabled()){%> checked <%}%> value="1">
             </div>
         </div>
         <div class="layui-form-item">
