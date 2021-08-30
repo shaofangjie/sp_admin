@@ -13,6 +13,9 @@ public enum ResponseCode {
     USER_EXIST(0, "用户已存在"),
     ROLE_NOT_EXIST(0, "角色不存在"),
 
+    ERROR_TRY_AGAIN(506,"正在重试"),
+    ERROR_TRY_AGAIN_FAILED(507,"重试失败"),
+
     SUCCESS(200,"成功"),
     ERROR(1,"错误请求"),
     NEED_REGISTER(10,"请注册后登录!"),
@@ -21,8 +24,8 @@ public enum ResponseCode {
     TOMANYLOGIN(11,"您的账号账号被挤出."),
     ILLEGAL_ARGUMENT(2,"ILLEGAL_ARGUMENT");
 
-    private final int code;
-    private final String desc;
+    private int code = 0;
+    private String desc = null;
 
     ResponseCode(int code, String desc){
         this.code=code;

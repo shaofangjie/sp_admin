@@ -21,11 +21,11 @@ layui.use(['form', 'jquery', 'admin'], function () {
     form.on('submit(edit)', function (data) {
         $.ajaxSetup({
             data:{
-                "adminEditForm.password": !isEmptyString($("#password").val()) ? hex_md5($("#password").val()) : ""
+                "password": !isEmptyString($("#password").val()) ? hex_md5($("#password").val()) : ""
             }
         });
         $.ajax({
-            url: '/authority/Admin/edit',
+            url: '/authority/Admin/doEdit',
             method: 'POST',
             data: data.field,
             success: function (data) {

@@ -37,7 +37,7 @@ spring:
     druid:
       username: root
       password: rootpwd
-      url: jdbc:mysql://127.0.0.1:3306/test_db?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false
+      url: jdbc:mysql://127.0.0.1:3306/test_db?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useAffectedRows=true
       driver-class-name: com.mysql.jdbc.Driver
       # druid连接池监控
       stat-view-servlet:

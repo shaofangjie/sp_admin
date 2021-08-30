@@ -11,11 +11,15 @@ public interface AdminMapper {
 
     AdminEntity selectAdminInfoByUserName(@Param("userName") String userName);
 
+    AdminEntity selectAdminInfoById(@Param("adminId") Long adminId);
+
     List<AdminEntity> selectAllAdminInfo(@Param("userName") String userName
             , @Param("nickName") String nickName
             , @Param("roleId") long roleId
     );
 
     Long insertAdmin(AdminEntity admin);
+
+    Long updateAdmin(AdminEntity admin);
 
 }

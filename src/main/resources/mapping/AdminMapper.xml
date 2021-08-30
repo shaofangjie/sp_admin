@@ -46,6 +46,17 @@
         where a.user_name = #{userName}
     </select>
 
+    <select id="selectAdminInfoById" resultMap="adminInfo">
+        select a.id, a.user_name, a.nick_name, a.`password`, a.enabled, a.is_lock, a.version, a.when_created, a.when_updated,
+               r.id role_id, r.role_name, r.is_lock role_is_lock, r.version role_version, r.when_created role_when_created, r.when_updated role_when_updated,
+               resource.id source_id, resource.source_pid, resource.source_type, resource.iconfont, resource.source_name, resource.source_url,
+               resource.source_function,resource.enabled source_enabled, resource.source_order, resource.is_lock source_is_lock, resource.version source_version, resource.when_created source_when_created, resource.when_updated source_when_updated
+        from admin a LEFT JOIN admin_role r on a.role_id = r.id
+                     LEFT JOIN admin_role_resources rs on r.id=rs.role_id
+                     LEFT JOIN  admin_resources resource on rs.resource_id = resource.id
+        where a.id = #{adminId}
+    </select>
+
     <resultMap id="allAdmin" type="com.sp.admin.entity.authority.AdminEntity">
         <result column="id" jdbcType="BIGINT" property="id" />
         <result column="user_name" jdbcType="VARCHAR" property="userName" />
@@ -85,4 +96,32 @@
         insert into admin(user_name, nick_name, role_id, `password`, enabled, is_lock, version, when_created, when_updated)
         values(#{userName}, #{nickName}, #{roleId}, #{password}, #{enabled}, #{Lock}, #{version}, #{whenCreated}, #{whenUpdated})
     </insert>
+
+    <update id="updateAdmin" parameterType="com.sp.admin.entity.authority.AdminEntity">
+        update admin set
+        version = version+1
+        <if test="nickName != null">
+            ,nick_name = #{nickName}
+        </if>
+        <if test="roleId != null">
+            ,role_id = #{roleId}
+        </if>
+        <if test="password != null">
+            ,`password` = #{password}
+        </if>
+        <if test="enabled != null">
+            ,enabled = #{enabled}
+        </if>
+        <if test="is_lock != null">
+            ,is_lock = #{Lock}
+        </if>
+        <if test="whenUpdated != null">
+            ,when_updated = #{whenUpdated}
+        </if>
+        where
+        version=#{version}
+        <if test="id != null">
+            and  id=#{id}
+        </if>
+    </update>
 </mapper>

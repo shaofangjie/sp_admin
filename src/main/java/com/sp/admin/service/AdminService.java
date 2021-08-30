@@ -110,6 +110,21 @@ public class AdminService {
 
     }
 
+    public AdminEntity getAdminInfo(Long adminId) {
+
+        return adminMapper.selectAdminInfoById(adminId);
+
+    }
+
+    public ResponseCode adminUpdate() {
+
+
+
+
+        return null;
+
+    }
+
 
 
 }

@@ -15,10 +15,8 @@ import com.sp.admin.service.AdminService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -82,7 +80,7 @@ public class AdminController extends BaseController {
 
     @PostMapping("/doAdd")
     @SpecifiedPermission("authority.AdminController.add")
-    public ServerResponse addHandler(@Valid AdminAddForm adminAddForm, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
+    public ServerResponse addHandler(@Valid AdminAddForm adminAddForm, BindingResult bindingResult, HttpServletResponse response) {
 
         if (bindingResult.hasErrors()) {
             response.setStatus(400);
@@ -106,6 +104,18 @@ public class AdminController extends BaseController {
                 return ServerResponse.createByErrorMessage("添加失败,请重试.");
         }
 
+    }
+
+    @GetMapping("/edit/{adminId}")
+    @SpecifiedPermission("authority.AdminController.edit")
+    public ModelAndView edit(@PathVariable(name = "adminId") Long adminId, ModelAndView modelAndView) {
+
+        modelAndView.addObject("adminRoleList", adminService.getAllRoleList());
+        modelAndView.addObject("adminInfo", adminService.getAdminInfo(adminId));
+
+        modelAndView.setViewName("/authority/adminEdit.btl");
+
+        return modelAndView;
     }
 
 }
