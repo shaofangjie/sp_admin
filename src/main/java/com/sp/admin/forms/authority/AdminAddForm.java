@@ -1,6 +1,6 @@
 package com.sp.admin.forms.authority;
 
-import com.sp.admin.commonutil.RegexpConsts;
+import com.sp.admin.commonutil.consts.RegexpConsts;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
