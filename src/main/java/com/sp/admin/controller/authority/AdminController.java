@@ -9,14 +9,17 @@ import com.sp.admin.commonutil.response.ServerResponse;
 import com.sp.admin.controller.BaseController;
 import com.sp.admin.entity.authority.AdminEntity;
 import com.sp.admin.forms.authority.AdminAddForm;
+import com.sp.admin.forms.authority.AdminEditForm;
 import com.sp.admin.forms.authority.AdminEditPageForm;
 import com.sp.admin.forms.authority.AdminSearchForm;
 import com.sp.admin.results.AdminResult;
 import com.sp.admin.service.AdminService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
@@ -85,15 +88,15 @@ public class AdminController extends BaseController {
 
         switch (responseCode) {
             case ADD_SUCCESS:
-                return ServerResponse.createBySuccessMessage("添加成功");
+                return ServerResponse.createBySuccessMessage(ResponseCode.ADD_SUCCESS.getDesc());
             case USER_EXIST:
-                return ServerResponse.createByErrorMessage("用户已存在");
+                return ServerResponse.createByErrorMessage(ResponseCode.USER_EXIST.getDesc());
             case ROLE_NOT_EXIST:
-                return ServerResponse.createByErrorMessage("角色不存在");
+                return ServerResponse.createByErrorMessage(ResponseCode.ROLE_NOT_EXIST.getDesc());
             case ADD_FAILED:
-                return ServerResponse.createByErrorMessage("添加失败,请重试.");
+                return ServerResponse.createByErrorMessage(ResponseCode.ADD_FAILED.getDesc());
             default:
-                response.setStatus(400);
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 return ServerResponse.createByErrorMessage("添加失败,请重试.");
         }
 
@@ -106,7 +109,7 @@ public class AdminController extends BaseController {
         AdminEntity adminEntity = adminService.getAdminInfo(Long.parseLong(adminEditPageForm.getAdminId()));
 
         if (null == adminEntity) {
-            response.setStatus(404);
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return modelAndView;
         }
 
@@ -115,6 +118,30 @@ public class AdminController extends BaseController {
         modelAndView.setViewName("/authority/adminEdit.btl");
 
         return modelAndView;
+    }
+
+    @PostMapping("/doEdit")
+    @SpecifiedPermission("authority.AdminController.edit")
+    public ServerResponse editHandler(@Valid AdminEditForm adminEditForm, HttpServletResponse response) {
+
+        ResponseCode responseCode = adminService.adminUpdate(adminEditForm);
+
+        switch (responseCode) {
+            case EDIT_SUCCESS:
+                return ServerResponse.createBySuccessMessage(ResponseCode.EDIT_SUCCESS.getDesc());
+            case ADMIN_NOT_EXIST:
+                return ServerResponse.createByErrorMessage(ResponseCode.ADMIN_NOT_EXIST.getDesc());
+            case EDIT_FAILED:
+                return ServerResponse.createByErrorMessage(ResponseCode.EDIT_FAILED.getDesc());
+            case ROLE_NOT_EXIST:
+                return ServerResponse.createByErrorMessage(ResponseCode.ROLE_NOT_EXIST.getDesc());
+            case CANT_EDIT:
+                return ServerResponse.createByErrorMessage(ResponseCode.CANT_EDIT.getDesc());
+            default:
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                return ServerResponse.createByErrorMessage("修改失败,请重试.");
+        }
+
     }
 
 }

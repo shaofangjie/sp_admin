@@ -1,4 +1,4 @@
-package com.sp.admin.aspect;
+package com.sp.admin.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

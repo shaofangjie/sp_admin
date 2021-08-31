@@ -3,6 +3,7 @@ package com.sp.admin.aspect;
 import com.sp.admin.commonutil.response.ResponseCode;
 import com.sp.admin.exception.ApiException;
 import com.sp.admin.exception.TryAgainException;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * 更新失败，尝试重试切片
  */
+@Slf4j
 @Aspect
 @Configuration
 public class TryAgainAspect implements Ordered {
@@ -34,7 +36,7 @@ public class TryAgainAspect implements Ordered {
 		return this.order;
 	}
 
-	@Pointcut("@annotation(IsTryAgain)")
+	@Pointcut("@annotation(com.sp.admin.annotation.IsTryAgain)")
 	public void retryOnOptFailure() {
 		// pointcut mark
 	}
@@ -48,7 +50,7 @@ public class TryAgainAspect implements Ordered {
 			try {
 				//再次执行业务代码
 				Object proceed = pjp.proceed();
-				System.out.println("==重试成功==");
+				log.debug("==重试成功==");
 				return proceed;
 			} catch (TryAgainException ex) {
 				if (numAttempts > maxRetries) {
@@ -57,7 +59,7 @@ public class TryAgainAspect implements Ordered {
 					throw new ApiException(ResponseCode.ERROR_TRY_AGAIN_FAILED.getDesc());
 				}else{
 					//如果 没达到最大的重试次数，将再次执行
-					System.out.println("=====正在重试====="+numAttempts+"次");
+					log.debug("=====正在重试====={}次", numAttempts);
 				}
 			}
 		} while (numAttempts <= this.maxRetries);

@@ -13,6 +13,11 @@ public enum ResponseCode {
     USER_EXIST(0, "用户已存在"),
     ROLE_NOT_EXIST(0, "角色不存在"),
 
+    EDIT_FAILED(0, "修改失败"),
+    EDIT_SUCCESS(1, "修改成功"),
+    ADMIN_NOT_EXIST(0, "用户不存在"),
+    CANT_EDIT(0, "此用户无法编辑"),
+
     ERROR_TRY_AGAIN(506,"正在重试"),
     ERROR_TRY_AGAIN_FAILED(507,"重试失败"),
 

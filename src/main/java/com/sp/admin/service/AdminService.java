@@ -2,9 +2,9 @@ package com.sp.admin.service;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.crypto.digest.DigestUtil;
-import com.alibaba.druid.sql.visitor.functions.Now;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.sp.admin.annotation.IsTryAgain;
 import com.sp.admin.commonutil.redis.RedisUtil;
 import com.sp.admin.commonutil.response.ResponseCode;
 import com.sp.admin.dao.AdminMapper;
@@ -13,13 +13,13 @@ import com.sp.admin.entity.authority.AdminEntity;
 import com.sp.admin.entity.authority.AdminRoleEntity;
 import com.sp.admin.forms.LoginForm;
 import com.sp.admin.forms.authority.AdminAddForm;
+import com.sp.admin.forms.authority.AdminEditForm;
 import com.sp.admin.forms.authority.AdminSearchForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.sql.Timestamp;
 import java.util.List;
 
 @Service
@@ -35,23 +35,23 @@ public class AdminService {
     @Transactional
     public ResponseCode AdminLogin(LoginForm loginForm, HttpServletRequest request, boolean isDev) {
 
-        try{
+        try {
             if (!isDev && !loginForm.getCaptcha().equals(redisUtil.get("captcha-" + request.getSession().getId()))) {
                 return ResponseCode.CAPTCHA_FAILED;
             }
             AdminEntity admin = adminMapper.selectAdminInfoByUserName(loginForm.getUserName());
             if (null == admin) {
                 return ResponseCode.USERNAME_PWD_FAILED;
-            } else if(DigestUtil.sha256Hex(loginForm.getPassword().trim()).equals(admin.getPassword())) {
+            } else if (DigestUtil.sha256Hex(loginForm.getPassword().trim()).equals(admin.getPassword())) {
                 request.getSession().setAttribute("isLogin", true);
                 request.getSession().setAttribute("adminId", admin.getId());
                 redisUtil.set("loginAdmin", admin);
                 return ResponseCode.LOGIN_SUCCESS;
             }
-            if (!admin.isEnabled()){
+            if (!admin.isEnabled()) {
                 return ResponseCode.USER_DISABLE;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseCode.LOGIN_FAILED;
         }
 
@@ -67,12 +67,13 @@ public class AdminService {
 
     public PageInfo<AdminEntity> getAdminPageList(AdminSearchForm adminSearchForm, int page, int limit) {
 
-        PageHelper.startPage(page,limit);
+        PageHelper.startPage(page, limit);
         List<AdminEntity> adminEntityList = adminMapper.selectAllAdminInfo(adminSearchForm.getUserName(), adminSearchForm.getNickName(), Long.parseLong(adminSearchForm.getRoleId()));
 
         return new PageInfo<>(adminEntityList);
     }
 
+    @Transactional
     public ResponseCode adminSave(AdminAddForm adminAddForm) {
 
         AdminEntity adminEntity = adminMapper.selectAdminInfoByUserName(adminAddForm.getUserName());
@@ -116,15 +117,41 @@ public class AdminService {
 
     }
 
-    public ResponseCode adminUpdate() {
+    @Transactional
+    @IsTryAgain
+    public ResponseCode adminUpdate(AdminEditForm adminEditForm) {
 
+        AdminEntity adminEntity = adminMapper.selectAdminInfoById(Long.parseLong(adminEditForm.getAdminId()));
 
+        if (null == adminEntity) {
+            return ResponseCode.ADMIN_NOT_EXIST;
+        }
 
+        if (adminEntity.isLock()) {
+            return ResponseCode.CANT_EDIT;
+        }
 
-        return null;
+        AdminRoleEntity adminRoleEntity = adminRoleMapper.selectRoleById(adminEditForm.getRoleId());
+
+        if (null == adminRoleEntity) {
+            return ResponseCode.ROLE_NOT_EXIST;
+        }
+
+        adminEntity.setNickName(adminEditForm.getNickName());
+        adminEntity.setRoleId(Long.parseLong(adminEditForm.getRoleId()));
+        adminEntity.setEnabled(null != adminEditForm.getEnable() && "1".equals(adminEditForm.getEnable()));
+        adminEntity.setPassword(DigestUtil.sha256Hex(adminEditForm.getPassword().trim()));
+        adminEntity.setWhenUpdated(DateTime.now().toTimestamp());
+
+        Long row = adminMapper.updateAdmin(adminEntity);
+
+        if (row != 0) {
+            return ResponseCode.EDIT_SUCCESS;
+        } else {
+            return ResponseCode.EDIT_FAILED;
+        }
 
     }
-
 
 
 }

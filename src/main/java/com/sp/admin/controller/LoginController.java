@@ -2,15 +2,13 @@ package com.sp.admin.controller;
 
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.LineCaptcha;
-import com.alibaba.fastjson.JSONObject;
+import com.sp.admin.commonutil.log.WebLog;
 import com.sp.admin.commonutil.response.ResponseCode;
 import com.sp.admin.commonutil.response.ServerResponse;
-import com.sp.admin.commonutil.log.WebLog;
 import com.sp.admin.forms.LoginForm;
 import com.sp.admin.service.AdminService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -62,17 +60,17 @@ public class LoginController extends BaseController {
 
         switch (responseCode) {
             case LOGIN_SUCCESS:
-                return ServerResponse.createBySuccessMessage("登录成功");
+                return ServerResponse.createBySuccessMessage(ResponseCode.LOGIN_SUCCESS.getDesc());
             case CAPTCHA_FAILED:
-                return ServerResponse.createByErrorMessage("验证码错误");
+                return ServerResponse.createByErrorMessage(ResponseCode.CAPTCHA_FAILED.getDesc());
             case USER_DISABLE:
-                return ServerResponse.createByErrorMessage("账号已禁用");
+                return ServerResponse.createByErrorMessage(ResponseCode.USER_DISABLE.getDesc());
             case LOGIN_FAILED:
-                return ServerResponse.createByErrorMessage("登录失败,请重试.");
+                return ServerResponse.createByErrorMessage(ResponseCode.LOGIN_FAILED.getDesc());
             case USERNAME_PWD_FAILED:
-                return ServerResponse.createByErrorMessage("用户名或密码错误");
+                return ServerResponse.createByErrorMessage(ResponseCode.USERNAME_PWD_FAILED.getDesc());
             default:
-                response.setStatus(400);
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 return ServerResponse.createByErrorMessage("登录失败,请重试.");
         }
 
