@@ -79,13 +79,7 @@ public class AdminController extends BaseController {
 
     @PostMapping("/doAdd")
     @SpecifiedPermission("authority.AdminController.add")
-    public ServerResponse addHandler(@Valid AdminAddForm adminAddForm, BindingResult bindingResult, HttpServletResponse response) {
-
-        if (bindingResult.hasErrors()) {
-            response.setStatus(400);
-            JSONObject errors = getViolationErrMsg(bindingResult.getFieldErrors());
-            return ServerResponse.createByErrorMessage("参数错误", 1, errors);
-        }
+    public ServerResponse addHandler(@Valid AdminAddForm adminAddForm, HttpServletResponse response) {
 
         ResponseCode responseCode = adminService.adminSave(adminAddForm);
 
@@ -107,12 +101,7 @@ public class AdminController extends BaseController {
 
     @GetMapping("/edit")
     @SpecifiedPermission("authority.AdminController.edit")
-    public ModelAndView edit(@Valid AdminEditPageForm adminEditPageForm, BindingResult bindingResult, HttpServletResponse response, ModelAndView modelAndView) {
-
-        if (bindingResult.hasErrors()) {
-            response.setStatus(400);
-            return modelAndView;
-        }
+    public ModelAndView edit(@Valid AdminEditPageForm adminEditPageForm, HttpServletResponse response, ModelAndView modelAndView) {
 
         AdminEntity adminEntity = adminService.getAdminInfo(Long.parseLong(adminEditPageForm.getAdminId()));
 

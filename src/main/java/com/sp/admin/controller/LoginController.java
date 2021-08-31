@@ -55,13 +55,8 @@ public class LoginController extends BaseController {
 
     @WebLog()
     @PostMapping("/doLogin")
-    public ServerResponse loginHandler(@Valid LoginForm loginForm, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
+    public ServerResponse loginHandler(@Valid LoginForm loginForm, HttpServletRequest request, HttpServletResponse response) {
         log.debug("{}------doLogin", request.getSession().getId());
-        if (bindingResult.hasErrors()) {
-            response.setStatus(400);
-            JSONObject errors = getViolationErrMsg(bindingResult.getFieldErrors());
-            return ServerResponse.createByErrorMessage("参数错误", 1, errors);
-        }
 
         ResponseCode responseCode = adminService.AdminLogin(loginForm, request, this.isDev());
 
