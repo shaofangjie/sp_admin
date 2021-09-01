@@ -19,10 +19,10 @@ layui.use(['form', 'table', 'jquery', 'admin', 'layer'], function () {
     });
 
     var queryParams = function () {
-        var param = {roleSearchForm: {}};
-        param.roleSearchForm.orderColumn = "whenCreated";
-        param.roleSearchForm.orderDir = "asc";
-        param.roleSearchForm.roleName = $("#roleName").val();
+        var param = {};
+        param.orderColumn = "whenCreated";
+        param.orderDir = "asc";
+        param.roleName = $("#roleName").val();
         return param;
     };
 
@@ -37,7 +37,7 @@ layui.use(['form', 'table', 'jquery', 'admin', 'layer'], function () {
         page: true, //开启分页
         cols: [[
             {field: 'id', title: 'ID', width: '10%'},
-            {field: 'roleName', title: '资源名称', width: '35%'},
+            {field: 'roleName', title: '权限名称', width: '35%'},
             {field: 'adminNum', title: '用户数', width: '10%'},
             {field: 'whenUpdated', title: '修改时间', width: '15%'},
             {field: 'whenCreated', title: '创建时间', width: '15%'},
@@ -71,7 +71,7 @@ layui.use(['form', 'table', 'jquery', 'admin', 'layer'], function () {
                         url:'/authority/AdminRole/del/'+dataId,
                         method:'GET',
                         success:function(data){
-                            if(data.errcode === 0){
+                            if(data.success){
                                 layer.msg(data.msg, {time: 2000, icon:1});
                                 roleTable.reload({
                                     where: queryParams()
@@ -83,7 +83,7 @@ layui.use(['form', 'table', 'jquery', 'admin', 'layer'], function () {
                         error:function (error) {
                             data = JSON.parse(error.responseText);
                             if(data.detail === 1){
-                                var errmsgs = data.msg;
+                                var errmsgs = data.data;
                                 var errstr = '';
                                 for (var i in errmsgs) {
                                     errstr += errmsgs[i] + '<br />';
