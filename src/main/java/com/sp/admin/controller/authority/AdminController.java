@@ -8,12 +8,10 @@ import com.sp.admin.commonutil.response.ResponseCode;
 import com.sp.admin.commonutil.response.ServerResponse;
 import com.sp.admin.controller.BaseController;
 import com.sp.admin.entity.authority.AdminEntity;
-import com.sp.admin.forms.authority.AdminAddForm;
-import com.sp.admin.forms.authority.AdminEditForm;
-import com.sp.admin.forms.authority.AdminEditPageForm;
-import com.sp.admin.forms.authority.AdminSearchForm;
+import com.sp.admin.forms.authority.*;
 import com.sp.admin.results.AdminResult;
 import com.sp.admin.service.AdminService;
+import com.tuyang.beanutils.BeanCopyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,15 +52,14 @@ public class AdminController extends BaseController {
 
         List<Object> adminResultList = new ArrayList<>();
         for (AdminEntity admin : adminEntityPageInfo.getList()) {
-            AdminResult adminResult = new AdminResult();
-            adminResult.setId(admin.getId());
-            adminResult.setUserName(admin.getUserName());
-            adminResult.setNickName(admin.getNickName());
+
+            AdminResult adminResult = BeanCopyUtils.copyBean(admin, AdminResult.class);
             adminResult.setRoleName(admin.getAdminRole().getRoleName());
-            adminResult.setWhenUpdated(admin.getWhenUpdated());
-            adminResult.setWhenCreated(admin.getWhenCreated());
             adminResult.setEnable(admin.isEnabled() ? 1 : 0);
             adminResult.setLock(admin.isLock() ? 1 : 0);
+            adminResult.setWhenUpdated(admin.getWhenUpdated());
+            adminResult.setWhenCreated(admin.getWhenCreated());
+
             adminResultList.add(adminResult);
         }
 
@@ -137,6 +134,28 @@ public class AdminController extends BaseController {
                 return ServerResponse.createByErrorMessage(ResponseCode.ROLE_NOT_EXIST.getDesc());
             case CANT_EDIT:
                 return ServerResponse.createByErrorMessage(ResponseCode.CANT_EDIT.getDesc());
+            default:
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                return ServerResponse.createByErrorMessage("修改失败,请重试.");
+        }
+
+    }
+
+    @GetMapping("/del")
+    @SpecifiedPermission("authority.AdminController.del")
+    public ServerResponse del(@Valid AdminDelForm adminDelForm, HttpServletResponse response) {
+
+        ResponseCode responseCode = adminService.adminDelete(adminDelForm);
+
+        switch (responseCode) {
+            case DEL_SUCCESS:
+                return ServerResponse.createBySuccessMessage(ResponseCode.DEL_SUCCESS.getDesc());
+            case ADMIN_NOT_EXIST:
+                return ServerResponse.createByErrorMessage(ResponseCode.ADMIN_NOT_EXIST.getDesc());
+            case DEL_FAILED:
+                return ServerResponse.createByErrorMessage(ResponseCode.DEL_FAILED.getDesc());
+            case CANT_DEL:
+                return ServerResponse.createByErrorMessage(ResponseCode.CANT_DEL.getDesc());
             default:
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 return ServerResponse.createByErrorMessage("修改失败,请重试.");

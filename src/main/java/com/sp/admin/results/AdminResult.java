@@ -1,6 +1,7 @@
 package com.sp.admin.results;
 
 import cn.hutool.core.date.DateUtil;
+import com.tuyang.beanutils.annotation.CopyProperty;
 
 import java.sql.Timestamp;
 
@@ -17,7 +18,9 @@ public class AdminResult {
     private String userName;
     private String nickName;
     private String roleName;
+    @CopyProperty(ignored=true)
     private int enable;
+    @CopyProperty(ignored=true)
     private int lock;
     private String whenUpdated;
     private String whenCreated;

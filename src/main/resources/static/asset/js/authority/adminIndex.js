@@ -78,10 +78,10 @@ layui.use(['form', 'table', 'jquery', 'admin', 'layer'], function () {
                 btn: ['确定', '取消'],
                 yes: function (index, layero) {
                     $.ajax({
-                        url:'/authority/Admin/del/'+dataId,
+                        url:'/authority/Admin/del/?adminId='+dataId,
                         method:'GET',
                         success:function(data){
-                            if(data.errcode === 0){
+                            if(data.success){
                                 layer.msg(data.msg, {time: 2000, icon:1});
                                 adminTable.reload({
                                     where: queryParams()
@@ -93,7 +93,7 @@ layui.use(['form', 'table', 'jquery', 'admin', 'layer'], function () {
                         error:function (error) {
                             data = JSON.parse(error.responseText);
                             if(data.detail === 1){
-                                var errmsgs = data.msg;
+                                var errmsgs = data.data;
                                 var errstr = '';
                                 for (var i in errmsgs) {
                                     errstr += errmsgs[i] + '<br />';

@@ -22,4 +22,6 @@ public interface AdminMapper {
 
     Long updateAdmin(AdminEntity admin);
 
+    Long deleteAdmin(AdminEntity admin);
+
 }

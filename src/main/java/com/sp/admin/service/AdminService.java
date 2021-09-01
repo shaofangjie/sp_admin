@@ -13,6 +13,7 @@ import com.sp.admin.entity.authority.AdminEntity;
 import com.sp.admin.entity.authority.AdminRoleEntity;
 import com.sp.admin.forms.LoginForm;
 import com.sp.admin.forms.authority.AdminAddForm;
+import com.sp.admin.forms.authority.AdminDelForm;
 import com.sp.admin.forms.authority.AdminEditForm;
 import com.sp.admin.forms.authority.AdminSearchForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,6 +150,29 @@ public class AdminService {
             return ResponseCode.EDIT_SUCCESS;
         } else {
             return ResponseCode.EDIT_FAILED;
+        }
+
+    }
+
+    @Transactional
+    public ResponseCode adminDelete(AdminDelForm adminDelForm) {
+
+        AdminEntity adminEntity = this.getAdminInfo(Long.parseLong(adminDelForm.getAdminId()));
+
+        if (null == adminEntity) {
+            return ResponseCode.ADMIN_NOT_EXIST;
+        }
+
+        if (adminEntity.isLock()) {
+            return ResponseCode.CANT_DEL;
+        }
+
+        Long row = adminMapper.deleteAdmin(adminEntity);
+
+        if (row != 0) {
+            return ResponseCode.DEL_SUCCESS;
+        } else {
+            return ResponseCode.DEL_FAILED;
         }
 
     }

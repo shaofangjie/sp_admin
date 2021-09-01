@@ -121,4 +121,7 @@
             and  id=#{id}
         </if>
     </update>
+    <delete id="deleteAdmin" parameterType="com.sp.admin.entity.authority.AdminEntity">
+        DELETE FROM `admin` WHERE id = #{id}
+    </delete>
 </mapper>

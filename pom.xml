@@ -124,6 +124,13 @@
             <artifactId>hutool-all</artifactId>
             <version>5.7.9</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.github.yangtu222/BeanUtils -->
+        <dependency>
+            <groupId>com.github.yangtu222</groupId>
+            <artifactId>BeanUtils</artifactId>
+            <version>1.0.11</version>
+        </dependency>
+
         <!-- lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
