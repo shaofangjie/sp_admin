@@ -4,7 +4,7 @@
     <resultMap id="allRoles" type="com.sp.admin.entity.authority.AdminRoleEntity">
         <result column="id" jdbcType="BIGINT" property="id" />
         <result column="role_name" jdbcType="VARCHAR" property="roleName" />
-        <result column="admins" jdbcType="BIGINT" property="admins" />
+        <result column="adminNum" jdbcType="BIGINT" property="adminNum" />
         <result column="is_lock" jdbcType="TINYINT" property="Lock" />
         <result column="version" jdbcType="BIGINT" property="version" />
         <result column="when_created" jdbcType="TIMESTAMP" property="whenCreated" />
@@ -14,8 +14,16 @@
         select id, role_name, is_lock, version, when_created, when_updated
         from admin_role
     </select>
+    <select id="selectRolesByName" resultMap="allRoles">
+        select id, role_name, is_lock, version, when_created, when_updated
+        from admin_role
+        where 1=1
+        <if test="null != roleName and '' != roleName">
+            and role_name = #{roleName}
+        </if>
+    </select>
     <select id="selectRoleUserCountByRoleId" resultMap="allRoles">
-        select count(a.id) admins
+        select r.id, role_name, count(a.id) adminNum
         from admin_role r, `admin` a
         where r.id = a.role_id and r.id = #{roleId}
     </select>

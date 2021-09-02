@@ -18,18 +18,18 @@ public class AdminRoleEntity extends BaseEntity {
 
     private List<AdminEntity> admin;
 
-    private Long admins;
+    private int adminNum;
 
     private List<AdminResourcesEntity> adminRoleResources;
 
     private boolean Lock ; //是否锁定不允许修改,此值只有超级管理员组为1
 
-    public Long getAdmins() {
-        return admins;
+    public int getAdminNum() {
+        return adminNum;
     }
 
-    public void setAdmins(Long admins) {
-        this.admins = admins;
+    public void setAdminNum(int adminNum) {
+        this.adminNum = adminNum;
     }
 
     public String getRoleName() {
