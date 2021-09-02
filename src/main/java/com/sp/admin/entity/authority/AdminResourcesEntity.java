@@ -8,6 +8,8 @@ public class AdminResourcesEntity extends BaseEntity {
 
     private Long sourcePid;
 
+    private List<AdminResourcesEntity> childResources;
+
     private List<AdminRoleEntity> adminRoles;
 
     private int sourceType; //资源类型 0:目录 1:菜单 2:功能
@@ -28,6 +30,14 @@ public class AdminResourcesEntity extends BaseEntity {
 
     public Long getSourcePid() {
         return sourcePid;
+    }
+
+    public List<AdminResourcesEntity> getChildResources() {
+        return childResources;
+    }
+
+    public void setChildResources(List<AdminResourcesEntity> childResources) {
+        this.childResources = childResources;
     }
 
     public void setSourcePid(Long sourcePid) {

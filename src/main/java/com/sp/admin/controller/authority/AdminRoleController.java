@@ -64,4 +64,22 @@ public class AdminRoleController extends BaseController{
 
     }
 
+    @GetMapping("/resourceTree")
+    @SpecifiedPermission(value = "authority.AdminRoleController.add")
+    public JSONObject resourceTree() {
+
+        JSONObject resourceTreeJson = adminRoleService.getResourceTreeJson(null);
+
+        return resourceTreeJson;
+    }
+
+    @GetMapping("/add")
+    @SpecifiedPermission("authority.AdminRoleController.add")
+    public ModelAndView add(ModelAndView modelAndView) {
+
+        modelAndView.setViewName("/authority/adminRoleAdd.btl");
+
+        return modelAndView;
+    }
+
 }

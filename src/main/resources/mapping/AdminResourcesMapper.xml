@@ -26,6 +26,16 @@
         WHERE a.id = #{adminId}
     </select>
 
+    <select id="selectAdminResourcesByRoleId" parameterType="java.lang.Long" resultMap="adminResources">
+        select
+            resource.id, resource.source_pid, resource.source_type, resource.iconfont, resource.source_name, resource.source_url,
+            resource.source_function,resource.enabled, resource.source_order, resource.is_lock, resource.version, resource.when_created, resource.when_updated
+        from admin_role r
+                     LEFT JOIN admin_role_resources rs on r.id=rs.role_id
+                     LEFT JOIN  admin_resources resource on rs.resource_id = resource.id
+        WHERE r.id = #{roleId}
+    </select>
+
     <select id="selectAdminResourceByAdminIdAndFun" resultMap="adminResources">
         select
             resource.id, resource.source_pid, resource.source_type, resource.iconfont, resource.source_name, resource.source_url,
@@ -34,6 +44,42 @@
                      LEFT JOIN admin_role_resources rs on r.id=rs.role_id
                      LEFT JOIN  admin_resources resource on rs.resource_id = resource.id
         WHERE a.id = #{adminId} and resource.source_function = #{sourceFunction}
+    </select>
+
+    <resultMap id="resources" type="com.sp.admin.entity.authority.AdminResourcesEntity">
+        <result column="id" jdbcType="BIGINT" property="id" />
+        <result column="source_pid" jdbcType="BIGINT" property="sourcePid" />
+        <result column="source_type" jdbcType="INTEGER" property="sourceType" />
+        <result column="iconfont" jdbcType="VARCHAR" property="iconfont" />
+        <result column="source_name" jdbcType="VARCHAR" property="sourceName" />
+        <result column="source_url" jdbcType="VARCHAR" property="sourceUrl" />
+        <result column="source_function" jdbcType="VARCHAR" property="sourceFunction" />
+        <result column="enabled" jdbcType="TINYINT" property="enabled" />
+        <result column="source_order" jdbcType="INTEGER" property="sourceOrder" />
+        <result column="is_lock" jdbcType="TINYINT" property="Lock" />
+        <result column="version" jdbcType="BIGINT" property="version" />
+        <result column="when_created" jdbcType="TIMESTAMP" property="whenCreated" />
+        <result column="when_updated" jdbcType="TIMESTAMP" property="whenUpdated" />
+        <collection property="childResources" ofType="com.sp.admin.entity.authority.AdminResourcesEntity"
+                    select="selectResourceByPid" column="id"/>
+    </resultMap>
+    <select id="selectAllResources" resultMap="resources">
+        select id, source_pid, source_type, iconfont, source_name, source_url, source_function, enabled, source_order, is_lock, version, when_created, when_updated
+        from admin_resources
+    </select>
+
+    <select id="selectResourceByPid" resultMap="resources">
+        select id, source_pid, source_type, iconfont, source_name, source_url, source_function, enabled, source_order, is_lock, version, when_created, when_updated
+        from admin_resources
+        where 1=1
+        <choose>
+            <when test="0 == sourcePid">
+                and source_pid is null
+            </when>
+            <otherwise>
+                and source_pid = #{sourcePid}
+            </otherwise>
+        </choose>
     </select>
 
 </mapper>

@@ -7,8 +7,7 @@ import com.sp.admin.entity.authority.AdminResourcesEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class AdminResourcesService {
@@ -67,7 +66,50 @@ public class AdminResourcesService {
 
         return menuJson;
 
+    }
+
+    public List<Map<String, String>> getAllParentResources() {
+
+        List<AdminResourcesEntity> allResourcesList = adminResourcesMapper.selectAllResources();
+
+        List<Map<String, String>> allParentResources = new ArrayList<>();
+        Map<String, String> map = new HashMap<>();
+        map.put("id", "0");
+        map.put("name", "顶级资源");
+        map.put("type", "0");
+        allParentResources.add(map);
+        for (AdminResourcesEntity topResource : allResourcesList) {
+            if (null == topResource.getSourcePid()) {
+                Map<String, String> topMap = new HashMap<>();
+                topMap.put("id", topResource.getId().toString());
+                topMap.put("type", String.valueOf(topResource.getSourceType()));
+                topMap.put("name", "┝ " + topResource.getSourceName());
+                allParentResources.add(topMap);
+                for (AdminResourcesEntity secondResource : allResourcesList) {
+                    if ((0 == secondResource.getSourceType() || 1 == secondResource.getSourceType()) && null != secondResource.getSourcePid() && secondResource.getSourcePid().equals(topResource.getId())) {
+                        Map<String, String> secondMap = new HashMap<>();
+                        secondMap.put("id", secondResource.getId().toString());
+                        secondMap.put("type", String.valueOf(secondResource.getSourceType()));
+                        secondMap.put("name", "&nbsp;&nbsp;┝ " + secondResource.getSourceName());
+                        allParentResources.add(secondMap);
+                        for (AdminResourcesEntity threeResource : allResourcesList) {
+                            if ((0 == threeResource.getSourceType() || 1 == threeResource.getSourceType() )&& null != threeResource.getSourcePid() && threeResource.getSourcePid().equals(secondResource.getId())) {
+                                Map<String, String> threeMap = new HashMap<>();
+                                threeMap.put("id", threeResource.getId().toString());
+                                threeMap.put("type", String.valueOf(threeResource.getSourceType()));
+                                threeMap.put("name", "&nbsp;&nbsp;&nbsp;&nbsp;┝ " + threeResource.getSourceName());
+                                allParentResources.add(threeMap);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return allParentResources;
 
     }
+
+
 
 }
