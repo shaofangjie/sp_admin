@@ -4,10 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.sp.admin.annotation.authentication.SpecifiedPermission;
 import com.sp.admin.commonutil.consts.RegexpConsts;
+import com.sp.admin.commonutil.response.ResponseCode;
+import com.sp.admin.commonutil.response.ServerResponse;
 import com.sp.admin.controller.BaseController;
-import com.sp.admin.entity.authority.AdminEntity;
 import com.sp.admin.entity.authority.AdminRoleEntity;
-import com.sp.admin.forms.authority.AdminSearchForm;
+import com.sp.admin.forms.authority.RoleAddForm;
 import com.sp.admin.forms.authority.RoleSearchForm;
 import com.sp.admin.results.AdminRoleResult;
 import com.sp.admin.service.AdminRoleService;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
@@ -80,6 +82,28 @@ public class AdminRoleController extends BaseController{
         modelAndView.setViewName("/authority/adminRoleAdd.btl");
 
         return modelAndView;
+    }
+
+    @PostMapping("/doAdd")
+    @SpecifiedPermission(value = "authority.AdminRoleController.add")
+    public ServerResponse addHandler(@Valid RoleAddForm roleAddForm, HttpServletResponse response) {
+
+        ResponseCode responseCode = adminRoleService.adminRoleSave(roleAddForm);
+
+        switch (responseCode) {
+            case ROLE_ADD_SUCCESS:
+                return ServerResponse.createBySuccessMessage(ResponseCode.ROLE_ADD_SUCCESS.getDesc());
+            case ROLE_NAME_EXIST:
+                return ServerResponse.createByErrorMessage(ResponseCode.ROLE_NAME_EXIST.getDesc());
+            case ROLE_RESOURCE_IS_ERROR:
+                return ServerResponse.createByErrorMessage(ResponseCode.ROLE_RESOURCE_IS_ERROR.getDesc());
+            case ROLE_ADD_FAILED:
+                return ServerResponse.createByErrorMessage(ResponseCode.ROLE_ADD_FAILED.getDesc());
+            default:
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                return ServerResponse.createByErrorMessage("添加失败,请重试.");
+        }
+
     }
 
 }

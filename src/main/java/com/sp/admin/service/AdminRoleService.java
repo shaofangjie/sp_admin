@@ -1,16 +1,20 @@
 package com.sp.admin.service;
 
+import cn.hutool.core.date.DateTime;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.sp.admin.commonutil.response.ResponseCode;
 import com.sp.admin.dao.AdminResourcesMapper;
 import com.sp.admin.dao.AdminRoleMapper;
 import com.sp.admin.entity.authority.AdminResourcesEntity;
 import com.sp.admin.entity.authority.AdminRoleEntity;
+import com.sp.admin.forms.authority.RoleAddForm;
 import com.sp.admin.forms.authority.RoleSearchForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -43,7 +47,7 @@ public class AdminRoleService {
     public JSONObject getResourceTreeJson(AdminRoleEntity adminRole) {
 
 
-        List<AdminResourcesEntity> allResourcesList = adminResourcesMapper.selectAllResources();
+        List<AdminResourcesEntity> allResourcesList = adminResourcesMapper.selectAllEnableResources();
 
         List<AdminResourcesEntity> hasResourcesList = new ArrayList<>();
 
@@ -116,6 +120,46 @@ public class AdminRoleService {
         resourcesTree.put("auth", resourcesTreeArr);
 
         return resourcesTree;
+    }
+
+    @Transactional
+    public ResponseCode adminRoleSave(RoleAddForm roleAddForm) {
+
+        try{
+            AdminRoleEntity adminRoleEntity = adminRoleMapper.selectRoleByRoleName(roleAddForm.getRoleName());
+
+            if (null != adminRoleEntity) {
+                return ResponseCode.ROLE_NAME_EXIST;
+            }
+
+            String[] resources = roleAddForm.getAuthStr().split(",");
+
+            List<AdminResourcesEntity> adminResourcesEntities = adminResourcesMapper.selectResourceByIds(roleAddForm.getAuthStr());
+
+            if (resources.length != adminResourcesEntities.size() || 0 == resources.length) {
+                return ResponseCode.ROLE_RESOURCE_IS_ERROR;
+            }
+
+            adminRoleEntity = new AdminRoleEntity();
+            adminRoleEntity.setRoleName(roleAddForm.getRoleName());
+            adminRoleEntity.setLock(false);
+            adminRoleEntity.setVersion(1L);
+            adminRoleEntity.setWhenCreated(DateTime.now().toTimestamp());
+            adminRoleEntity.setWhenUpdated(DateTime.now().toTimestamp());
+
+            adminRoleMapper.insertRole(adminRoleEntity);
+
+            long roleId = adminRoleEntity.getId();
+
+            for (AdminResourcesEntity adminResourcesEntity : adminResourcesEntities) {
+                adminRoleMapper.insertRoleResource(roleId, adminResourcesEntity.getId());
+            }
+
+            return ResponseCode.ROLE_ADD_SUCCESS;
+        }catch (Exception ex) {
+            return ResponseCode.ROLE_ADD_FAILED;
+        }
+
     }
 
 

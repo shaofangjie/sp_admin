@@ -84,14 +84,14 @@ public class AdminController extends BaseController {
         ResponseCode responseCode = adminService.adminSave(adminAddForm);
 
         switch (responseCode) {
-            case ADD_SUCCESS:
-                return ServerResponse.createBySuccessMessage(ResponseCode.ADD_SUCCESS.getDesc());
+            case USER_ADD_SUCCESS:
+                return ServerResponse.createBySuccessMessage(ResponseCode.USER_ADD_SUCCESS.getDesc());
             case USER_EXIST:
                 return ServerResponse.createByErrorMessage(ResponseCode.USER_EXIST.getDesc());
-            case ROLE_NOT_EXIST:
-                return ServerResponse.createByErrorMessage(ResponseCode.ROLE_NOT_EXIST.getDesc());
-            case ADD_FAILED:
-                return ServerResponse.createByErrorMessage(ResponseCode.ADD_FAILED.getDesc());
+            case USER_ROLE_NOT_EXIST:
+                return ServerResponse.createByErrorMessage(ResponseCode.USER_ROLE_NOT_EXIST.getDesc());
+            case USER_ADD_FAILED:
+                return ServerResponse.createByErrorMessage(ResponseCode.USER_ADD_FAILED.getDesc());
             default:
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 return ServerResponse.createByErrorMessage("添加失败,请重试.");
@@ -124,16 +124,16 @@ public class AdminController extends BaseController {
         ResponseCode responseCode = adminService.adminUpdate(adminEditForm);
 
         switch (responseCode) {
-            case EDIT_SUCCESS:
-                return ServerResponse.createBySuccessMessage(ResponseCode.EDIT_SUCCESS.getDesc());
-            case ADMIN_NOT_EXIST:
-                return ServerResponse.createByErrorMessage(ResponseCode.ADMIN_NOT_EXIST.getDesc());
-            case EDIT_FAILED:
-                return ServerResponse.createByErrorMessage(ResponseCode.EDIT_FAILED.getDesc());
-            case ROLE_NOT_EXIST:
-                return ServerResponse.createByErrorMessage(ResponseCode.ROLE_NOT_EXIST.getDesc());
-            case CANT_EDIT:
-                return ServerResponse.createByErrorMessage(ResponseCode.CANT_EDIT.getDesc());
+            case USER_EDIT_SUCCESS:
+                return ServerResponse.createBySuccessMessage(ResponseCode.USER_EDIT_SUCCESS.getDesc());
+            case USER_NOT_EXIST:
+                return ServerResponse.createByErrorMessage(ResponseCode.USER_NOT_EXIST.getDesc());
+            case USER_EDIT_FAILED:
+                return ServerResponse.createByErrorMessage(ResponseCode.USER_EDIT_FAILED.getDesc());
+            case USER_ROLE_NOT_EXIST:
+                return ServerResponse.createByErrorMessage(ResponseCode.USER_ROLE_NOT_EXIST.getDesc());
+            case USER_CANT_EDIT:
+                return ServerResponse.createByErrorMessage(ResponseCode.USER_CANT_EDIT.getDesc());
             default:
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 return ServerResponse.createByErrorMessage("修改失败,请重试.");
@@ -148,14 +148,14 @@ public class AdminController extends BaseController {
         ResponseCode responseCode = adminService.adminDelete(adminDelForm);
 
         switch (responseCode) {
-            case DEL_SUCCESS:
-                return ServerResponse.createBySuccessMessage(ResponseCode.DEL_SUCCESS.getDesc());
-            case ADMIN_NOT_EXIST:
-                return ServerResponse.createByErrorMessage(ResponseCode.ADMIN_NOT_EXIST.getDesc());
-            case DEL_FAILED:
-                return ServerResponse.createByErrorMessage(ResponseCode.DEL_FAILED.getDesc());
-            case CANT_DEL:
-                return ServerResponse.createByErrorMessage(ResponseCode.CANT_DEL.getDesc());
+            case USER_DEL_SUCCESS:
+                return ServerResponse.createBySuccessMessage(ResponseCode.USER_DEL_SUCCESS.getDesc());
+            case USER_NOT_EXIST:
+                return ServerResponse.createByErrorMessage(ResponseCode.USER_NOT_EXIST.getDesc());
+            case USER_DEL_FAILED:
+                return ServerResponse.createByErrorMessage(ResponseCode.USER_DEL_FAILED.getDesc());
+            case USER_CANT_DEL:
+                return ServerResponse.createByErrorMessage(ResponseCode.USER_CANT_DEL.getDesc());
             default:
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 return ServerResponse.createByErrorMessage("修改失败,请重试.");

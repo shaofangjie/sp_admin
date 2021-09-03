@@ -82,7 +82,7 @@ public class AdminService {
         AdminRoleEntity adminRoleEntity = adminRoleMapper.selectRoleById(adminAddForm.getRoleId());
 
         if (null == adminRoleEntity) {
-            return ResponseCode.ROLE_NOT_EXIST;
+            return ResponseCode.USER_ROLE_NOT_EXIST;
         }
 
         if (null != adminEntity) {
@@ -101,12 +101,12 @@ public class AdminService {
 
             adminMapper.insertAdmin(adminEntity);
 
-            Long adminId = adminEntity.getId();
+            long adminId = adminEntity.getId();
 
             if (0 != adminId) {
-                return ResponseCode.ADD_SUCCESS;
+                return ResponseCode.USER_ADD_SUCCESS;
             } else {
-                return ResponseCode.ADD_FAILED;
+                return ResponseCode.USER_ADD_FAILED;
             }
         }
 
@@ -125,17 +125,17 @@ public class AdminService {
         AdminEntity adminEntity = adminMapper.selectAdminInfoById(Long.parseLong(adminEditForm.getAdminId()));
 
         if (null == adminEntity) {
-            return ResponseCode.ADMIN_NOT_EXIST;
+            return ResponseCode.USER_NOT_EXIST;
         }
 
         if (adminEntity.isLock()) {
-            return ResponseCode.CANT_EDIT;
+            return ResponseCode.USER_CANT_EDIT;
         }
 
         AdminRoleEntity adminRoleEntity = adminRoleMapper.selectRoleById(adminEditForm.getRoleId());
 
         if (null == adminRoleEntity) {
-            return ResponseCode.ROLE_NOT_EXIST;
+            return ResponseCode.USER_ROLE_NOT_EXIST;
         }
 
         adminEntity.setNickName(adminEditForm.getNickName());
@@ -147,9 +147,9 @@ public class AdminService {
         Long row = adminMapper.updateAdmin(adminEntity);
 
         if (row != 0) {
-            return ResponseCode.EDIT_SUCCESS;
+            return ResponseCode.USER_EDIT_SUCCESS;
         } else {
-            return ResponseCode.EDIT_FAILED;
+            return ResponseCode.USER_EDIT_FAILED;
         }
 
     }
@@ -160,19 +160,19 @@ public class AdminService {
         AdminEntity adminEntity = this.getAdminInfo(Long.parseLong(adminDelForm.getAdminId()));
 
         if (null == adminEntity) {
-            return ResponseCode.ADMIN_NOT_EXIST;
+            return ResponseCode.USER_NOT_EXIST;
         }
 
         if (adminEntity.isLock()) {
-            return ResponseCode.CANT_DEL;
+            return ResponseCode.USER_CANT_DEL;
         }
 
         Long row = adminMapper.deleteAdmin(adminEntity);
 
         if (row != 0) {
-            return ResponseCode.DEL_SUCCESS;
+            return ResponseCode.USER_DEL_SUCCESS;
         } else {
-            return ResponseCode.DEL_FAILED;
+            return ResponseCode.USER_DEL_FAILED;
         }
 
     }

@@ -15,6 +15,12 @@ public interface AdminRoleMapper {
 
     AdminRoleEntity selectRoleById(@Param("roleId") String roleId);
 
-    AdminRoleEntity selectRoleUserCountByRoleId(@Param("roleId") Long roleId);
+    AdminRoleEntity selectRoleByRoleName(@Param("roleName") String roleName);
+
+    AdminRoleEntity selectRoleUserCountByRoleId(@Param("roleId") long roleId);
+
+    long insertRole(AdminRoleEntity adminRole);
+
+    long insertRoleResource(@Param("roleId") long roleId, @Param("resourceId") long resourceId);
 
 }

@@ -19,7 +19,7 @@
         from admin_role
         where 1=1
         <if test="null != roleName and '' != roleName">
-            and role_name = #{roleName}
+            and role_name like concat('%', #{roleName}, '%')
         </if>
     </select>
     <select id="selectRoleUserCountByRoleId" resultMap="allRoles">
@@ -32,4 +32,17 @@
         from admin_role
         where id = #{roleId}
     </select>
+    <select id="selectRoleByRoleName" resultMap="allRoles">
+        select id, role_name, is_lock, version, when_created, when_updated
+        from admin_role
+        where id = #{roleName}
+    </select>
+    <insert id="insertRole" useGeneratedKeys="true" keyProperty="id" parameterType="com.sp.admin.entity.authority.AdminRoleEntity">
+        insert into admin_role(role_name, is_lock, version, when_created, when_updated)
+        values(#{roleName}, #{Lock}, #{version}, #{whenCreated}, #{whenUpdated})
+    </insert>
+    <insert id="insertRoleResource">
+        insert into admin_role_resources(role_id, resource_id)
+        values(#{roleId}, #{resourceId})
+    </insert>
 </mapper>

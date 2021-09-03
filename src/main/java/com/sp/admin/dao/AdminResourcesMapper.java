@@ -17,8 +17,10 @@ public interface AdminResourcesMapper {
 
     List<AdminResourcesEntity> selectAllResources();
 
+    List<AdminResourcesEntity> selectAllEnableResources();
+
     List<AdminResourcesEntity> selectAdminResourcesByRoleId(@Param("roleId") long roleId);
 
-
+    List<AdminResourcesEntity> selectResourceByIds(@Param("resourceIds") String resourceIds);
 
 }
