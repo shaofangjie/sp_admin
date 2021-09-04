@@ -16,6 +16,7 @@ import com.sp.admin.forms.authority.AdminAddForm;
 import com.sp.admin.forms.authority.AdminDelForm;
 import com.sp.admin.forms.authority.AdminEditForm;
 import com.sp.admin.forms.authority.AdminSearchForm;
+import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+@Log4j
 @Service
 public class AdminService {
 
@@ -79,7 +81,7 @@ public class AdminService {
 
         AdminEntity adminEntity = adminMapper.selectAdminInfoByUserName(adminAddForm.getUserName());
 
-        AdminRoleEntity adminRoleEntity = adminRoleMapper.selectRoleById(adminAddForm.getRoleId());
+        AdminRoleEntity adminRoleEntity = adminRoleMapper.selectRoleById(Long.parseLong(adminAddForm.getRoleId()));
 
         if (null == adminRoleEntity) {
             return ResponseCode.USER_ROLE_NOT_EXIST;
@@ -132,7 +134,7 @@ public class AdminService {
             return ResponseCode.USER_CANT_EDIT;
         }
 
-        AdminRoleEntity adminRoleEntity = adminRoleMapper.selectRoleById(adminEditForm.getRoleId());
+        AdminRoleEntity adminRoleEntity = adminRoleMapper.selectRoleById(Long.parseLong(adminEditForm.getRoleId()));
 
         if (null == adminRoleEntity) {
             return ResponseCode.USER_ROLE_NOT_EXIST;
@@ -144,7 +146,7 @@ public class AdminService {
         adminEntity.setPassword(DigestUtil.sha256Hex(adminEditForm.getPassword().trim()));
         adminEntity.setWhenUpdated(DateTime.now().toTimestamp());
 
-        Long row = adminMapper.updateAdmin(adminEntity);
+        long row = adminMapper.updateAdmin(adminEntity);
 
         if (row != 0) {
             return ResponseCode.USER_EDIT_SUCCESS;

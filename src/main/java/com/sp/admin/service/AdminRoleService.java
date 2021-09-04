@@ -11,15 +11,16 @@ import com.sp.admin.dao.AdminRoleMapper;
 import com.sp.admin.entity.authority.AdminResourcesEntity;
 import com.sp.admin.entity.authority.AdminRoleEntity;
 import com.sp.admin.forms.authority.RoleAddForm;
+import com.sp.admin.forms.authority.RoleEditForm;
 import com.sp.admin.forms.authority.RoleSearchForm;
+import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
+@Log4j
 @Service
 public class AdminRoleService {
 
@@ -44,15 +45,19 @@ public class AdminRoleService {
 
     }
 
-    public JSONObject getResourceTreeJson(AdminRoleEntity adminRole) {
+    public AdminRoleEntity getRoleById(Long roleId) {
+        return adminRoleMapper.selectRoleById(roleId);
+    }
+
+    public JSONObject getResourceTreeJson(Long roleId) {
 
 
         List<AdminResourcesEntity> allResourcesList = adminResourcesMapper.selectAllEnableResources();
 
         List<AdminResourcesEntity> hasResourcesList = new ArrayList<>();
 
-        if (null != adminRole) {
-            hasResourcesList = adminResourcesMapper.selectAdminResourcesByRoleId(adminRole.getId());
+        if (null != roleId && 0 != roleId) {
+            hasResourcesList = adminResourcesMapper.selectAdminResourcesByRoleId(roleId);
         }
 
         JSONArray resourcesTreeArr = new JSONArray();
@@ -62,7 +67,12 @@ public class AdminRoleService {
                 topMap.put("value", topResource.getId().toString());
                 topMap.put("name", topResource.getSourceName());
                 topMap.put("order", topResource.getSourceOrder());
-                topMap.put("checked", hasResourcesList.contains(topResource));
+                for (AdminResourcesEntity adminResourcesEntity : hasResourcesList) {
+                    if (adminResourcesEntity.getId().equals(topResource.getId())) {
+                        topMap.put("checked", true);
+                        break;
+                    }
+                }
                 JSONArray topList = new JSONArray();
                 for (AdminResourcesEntity secondResource : allResourcesList) {
                     if (secondResource.isEnabled() && null != secondResource.getSourcePid() && secondResource.getSourcePid().equals(topResource.getId())) {
@@ -70,7 +80,12 @@ public class AdminRoleService {
                         secondMap.put("value", secondResource.getId().toString());
                         secondMap.put("name", secondResource.getSourceName());
                         secondMap.put("order", secondResource.getSourceOrder());
-                        secondMap.put("checked", hasResourcesList.contains(secondResource));
+                        for (AdminResourcesEntity adminResourcesEntity : hasResourcesList) {
+                            if (adminResourcesEntity.getId().equals(secondResource.getId())) {
+                                secondMap.put("checked", true);
+                                break;
+                            }
+                        }
                         JSONArray secondList = new JSONArray();
                         for (AdminResourcesEntity threeResource : allResourcesList) {
                             if (threeResource.isEnabled() && null != threeResource.getSourcePid() && threeResource.getSourcePid().equals(secondResource.getId())) {
@@ -78,7 +93,12 @@ public class AdminRoleService {
                                 threeMap.put("value", threeResource.getId().toString());
                                 threeMap.put("name", threeResource.getSourceName());
                                 threeMap.put("order", threeResource.getSourceOrder());
-                                threeMap.put("checked", hasResourcesList.contains(threeResource));
+                                for (AdminResourcesEntity adminResourcesEntity : hasResourcesList) {
+                                    if (adminResourcesEntity.getId().equals(threeResource.getId())) {
+                                        threeMap.put("checked", true);
+                                        break;
+                                    }
+                                }
                                 JSONArray threeList = new JSONArray();
                                 for (AdminResourcesEntity fourResource : allResourcesList) {
                                     if (fourResource.isEnabled() && null != fourResource.getSourcePid() && fourResource.getSourcePid().equals(threeResource.getId())) {
@@ -158,6 +178,49 @@ public class AdminRoleService {
             return ResponseCode.ROLE_ADD_SUCCESS;
         }catch (Exception ex) {
             return ResponseCode.ROLE_ADD_FAILED;
+        }
+
+    }
+
+    @Transactional
+    public ResponseCode adminRoleUpdate(RoleEditForm roleEditForm) {
+
+        try {
+            AdminRoleEntity adminRoleEntity = adminRoleMapper.selectRoleById(Long.parseLong(roleEditForm.getRoleId()));
+
+            if (null == adminRoleEntity) {
+                return ResponseCode.ROLE_NOT_EXIST;
+            }
+
+            if (adminRoleEntity.isLock()) {
+                return ResponseCode.ROLE_CANT_EDIT;
+            }
+
+            adminRoleEntity.setRoleName(roleEditForm.getRoleName());
+            adminRoleEntity.setWhenUpdated(DateTime.now().toTimestamp());
+
+            long delResources = adminRoleMapper.deleteRoleAllResource(adminRoleEntity.getId());
+            log.debug(delResources);
+
+            String[] resources = roleEditForm.getAuthStr().split(",");
+            List<AdminResourcesEntity> adminResourcesEntities = adminResourcesMapper.selectResourceByIds(roleEditForm.getAuthStr());
+            if (resources.length != adminResourcesEntities.size() || 0 == resources.length) {
+                return ResponseCode.ROLE_RESOURCE_IS_ERROR;
+            }
+            for (AdminResourcesEntity adminResourcesEntity : adminResourcesEntities) {
+                adminRoleMapper.insertRoleResource(adminRoleEntity.getId(), adminResourcesEntity.getId());
+            }
+
+            long row = adminRoleMapper.updateRole(adminRoleEntity);
+
+            if (row != 0) {
+                return ResponseCode.ROLE_EDIT_SUCCESS;
+            } else {
+                return ResponseCode.ROLE_EDIT_FAILED;
+            }
+
+        } catch (Exception ex) {
+            return ResponseCode.ROLE_EDIT_FAILED;
         }
 
     }

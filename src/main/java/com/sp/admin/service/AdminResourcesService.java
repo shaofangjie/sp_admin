@@ -4,11 +4,13 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sp.admin.dao.AdminResourcesMapper;
 import com.sp.admin.entity.authority.AdminResourcesEntity;
+import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+@Log4j
 @Service
 public class AdminResourcesService {
 

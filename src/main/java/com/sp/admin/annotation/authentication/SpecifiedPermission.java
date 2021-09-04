@@ -7,5 +7,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SpecifiedPermission {
-    String value() default "none";
+//    String value() default "none";
+    String[] value() default {};
 }

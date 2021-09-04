@@ -13,7 +13,7 @@ public interface AdminRoleMapper {
 
     List<AdminRoleEntity> selectRolesByName(@Param("roleName") String roleName);
 
-    AdminRoleEntity selectRoleById(@Param("roleId") String roleId);
+    AdminRoleEntity selectRoleById(@Param("roleId") long roleId);
 
     AdminRoleEntity selectRoleByRoleName(@Param("roleName") String roleName);
 
@@ -22,5 +22,9 @@ public interface AdminRoleMapper {
     long insertRole(AdminRoleEntity adminRole);
 
     long insertRoleResource(@Param("roleId") long roleId, @Param("resourceId") long resourceId);
+
+    long updateRole(AdminRoleEntity adminRole);
+
+    long deleteRoleAllResource(@Param("roleId") long roleId);
 
 }

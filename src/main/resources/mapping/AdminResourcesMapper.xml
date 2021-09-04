@@ -16,6 +16,17 @@
         <result column="when_created" jdbcType="TIMESTAMP" property="whenCreated" />
         <result column="when_updated" jdbcType="TIMESTAMP" property="whenUpdated" />
     </resultMap>
+
+    <select id="selectAllResources" resultMap="adminResources">
+        select id, source_pid, source_type, iconfont, source_name, source_url, source_function, enabled, source_order, is_lock, version, when_created, when_updated
+        from admin_resources
+    </select>
+
+    <select id="selectAllEnableResources" resultMap="adminResources">
+        select id, source_pid, source_type, iconfont, source_name, source_url, source_function, enabled, source_order, is_lock, version, when_created, when_updated
+        from admin_resources where enabled = 1
+    </select>
+
     <select id="selectAdminResourcesByAdminId" parameterType="java.lang.Long" resultMap="adminResources">
         select
             resource.id, resource.source_pid, resource.source_type, resource.iconfont, resource.source_name, resource.source_url,
@@ -72,15 +83,6 @@
         <collection property="childResources" ofType="com.sp.admin.entity.authority.AdminResourcesEntity"
                     select="selectResourceByPid" column="id"/>
     </resultMap>
-    <select id="selectAllResources" resultMap="resources">
-        select id, source_pid, source_type, iconfont, source_name, source_url, source_function, enabled, source_order, is_lock, version, when_created, when_updated
-        from admin_resources
-    </select>
-
-    <select id="selectAllEnableResources" resultMap="resources">
-        select id, source_pid, source_type, iconfont, source_name, source_url, source_function, enabled, source_order, is_lock, version, when_created, when_updated
-        from admin_resources where enabled = 1
-    </select>
 
     <select id="selectResourceByPid" resultMap="resources">
         select id, source_pid, source_type, iconfont, source_name, source_url, source_function, enabled, source_order, is_lock, version, when_created, when_updated

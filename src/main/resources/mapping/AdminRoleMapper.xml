@@ -9,6 +9,21 @@
         <result column="version" jdbcType="BIGINT" property="version" />
         <result column="when_created" jdbcType="TIMESTAMP" property="whenCreated" />
         <result column="when_updated" jdbcType="TIMESTAMP" property="whenUpdated" />
+        <collection ofType="com.sp.admin.entity.authority.AdminResourcesEntity" property="adminRoleResources">
+            <result column="source_id" jdbcType="BIGINT" property="id" />
+            <result column="source_pid" jdbcType="BIGINT" property="sourcePid" />
+            <result column="source_type" jdbcType="INTEGER" property="sourceType" />
+            <result column="iconfont" jdbcType="VARCHAR" property="iconfont" />
+            <result column="source_name" jdbcType="VARCHAR" property="sourceName" />
+            <result column="source_url" jdbcType="VARCHAR" property="sourceUrl" />
+            <result column="source_function" jdbcType="VARCHAR" property="sourceFunction" />
+            <result column="source_enabled" jdbcType="TINYINT" property="enabled" />
+            <result column="source_order" jdbcType="INTEGER" property="sourceOrder" />
+            <result column="source_is_lock" jdbcType="TINYINT" property="Lock" />
+            <result column="source_version" jdbcType="BIGINT" property="version" />
+            <result column="source_when_created" jdbcType="TIMESTAMP" property="whenCreated" />
+            <result column="source_when_updated" jdbcType="TIMESTAMP" property="whenUpdated" />
+        </collection>
     </resultMap>
     <select id="selectAllRoles" resultMap="allRoles">
         select id, role_name, is_lock, version, when_created, when_updated
@@ -28,9 +43,13 @@
         where r.id = a.role_id and r.id = #{roleId}
     </select>
     <select id="selectRoleById" resultMap="allRoles">
-        select id, role_name, is_lock, version, when_created, when_updated
-        from admin_role
-        where id = #{roleId}
+        select r.id, role_name, r.is_lock, r.version, r.when_created, r.when_updated,
+        resource.id source_id, resource.source_pid, resource.source_type, resource.iconfont, resource.source_name, resource.source_url,
+        resource.source_function,resource.enabled source_enabled, resource.source_order, resource.is_lock source_is_lock, resource.version source_version, resource.when_created source_when_created, resource.when_updated source_when_updated
+        from admin_role r
+        LEFT JOIN admin_role_resources rs on r.id=rs.role_id
+        LEFT JOIN  admin_resources resource on rs.resource_id = resource.id
+        where r.id = #{roleId}
     </select>
     <select id="selectRoleByRoleName" resultMap="allRoles">
         select id, role_name, is_lock, version, when_created, when_updated
@@ -45,4 +64,23 @@
         insert into admin_role_resources(role_id, resource_id)
         values(#{roleId}, #{resourceId})
     </insert>
+    <update id="updateRole" parameterType="com.sp.admin.entity.authority.AdminRoleEntity">
+        update admin_role set
+        version = version+1
+        <if test="roleName != null">
+            ,role_name = #{roleName}
+        </if>
+        <if test="whenUpdated != null">
+            ,when_updated = #{whenUpdated}
+        </if>
+        where
+        version=#{version} and is_lock = false
+        <if test="id != null">
+            and  id=#{id}
+        </if>
+    </update>
+    <delete id="deleteRoleAllResource">
+        delete from admin_role_resources
+        where role_id = #{roleId}
+    </delete>
 </mapper>

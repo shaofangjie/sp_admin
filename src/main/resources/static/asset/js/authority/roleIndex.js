@@ -59,7 +59,7 @@ layui.use(['form', 'table', 'jquery', 'admin', 'layer'], function () {
         var dataId = data.id;
         console.log(layEvent + '-----' + dataId);
         if (layEvent === 'edit') {
-            addPage('修改权限角色', '/authority/AdminRole/edit/' + dataId);
+            addPage('修改权限角色', '/authority/AdminRole/edit/?roleId=' + dataId);
         }
         if (layEvent === 'del') {
             layer.open({
@@ -68,7 +68,7 @@ layui.use(['form', 'table', 'jquery', 'admin', 'layer'], function () {
                 btn: ['确定', '取消'],
                 yes: function (index, layero) {
                     $.ajax({
-                        url:'/authority/AdminRole/del/'+dataId,
+                        url:'/authority/AdminRole/del/?roleId='+dataId,
                         method:'GET',
                         success:function(data){
                             if(data.success){

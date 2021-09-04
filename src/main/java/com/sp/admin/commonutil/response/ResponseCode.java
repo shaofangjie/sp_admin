@@ -27,6 +27,11 @@ public enum ResponseCode {
     ROLE_ADD_SUCCESS(1, "添加成功"),
     ROLE_RESOURCE_IS_ERROR(0, "角色权限错误"),
 
+    ROLE_EDIT_FAILED(0, "角色修改失败"),
+    ROLE_EDIT_SUCCESS(1, "角色修改成功"),
+    ROLE_NOT_EXIST(0, "角色不存在"),
+    ROLE_CANT_EDIT(0, "角色权限错误"),
+
     ERROR_TRY_AGAIN(506,"正在重试"),
     ERROR_TRY_AGAIN_FAILED(507,"重试失败"),
 

@@ -8,16 +8,12 @@ import com.sp.admin.commonutil.response.ResponseCode;
 import com.sp.admin.commonutil.response.ServerResponse;
 import com.sp.admin.controller.BaseController;
 import com.sp.admin.entity.authority.AdminRoleEntity;
-import com.sp.admin.forms.authority.RoleAddForm;
-import com.sp.admin.forms.authority.RoleSearchForm;
+import com.sp.admin.forms.authority.*;
 import com.sp.admin.results.AdminRoleResult;
 import com.sp.admin.service.AdminRoleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
@@ -67,10 +63,16 @@ public class AdminRoleController extends BaseController{
     }
 
     @GetMapping("/resourceTree")
-    @SpecifiedPermission(value = "authority.AdminRoleController.add")
-    public JSONObject resourceTree() {
+    @SpecifiedPermission({"authority.AdminRoleController.add", "authority.AdminRoleController.edit"})
+    public JSONObject resourceTree(@RequestParam(name = "roleId", required = false) Long roleId) {
 
-        JSONObject resourceTreeJson = adminRoleService.getResourceTreeJson(null);
+        JSONObject resourceTreeJson;
+
+        if (null == roleId || 0 == roleId){
+            resourceTreeJson = adminRoleService.getResourceTreeJson(null);
+        } else {
+            resourceTreeJson = adminRoleService.getResourceTreeJson(roleId);
+        }
 
         return resourceTreeJson;
     }
@@ -105,5 +107,44 @@ public class AdminRoleController extends BaseController{
         }
 
     }
+
+    @GetMapping("/edit")
+    @SpecifiedPermission("authority.AdminRoleController.edit")
+    public ModelAndView edit(@Valid RoleEditPageForm roleEditPageForm, HttpServletResponse response, ModelAndView modelAndView) {
+
+        AdminRoleEntity adminRoleEntity = adminRoleService.getRoleById(Long.parseLong(roleEditPageForm.getRoleId()));
+
+        if (null == adminRoleEntity) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return modelAndView;
+        }
+
+        modelAndView.addObject("adminRole", adminRoleEntity);
+        modelAndView.setViewName("/authority/adminRoleEdit.btl");
+
+        return modelAndView;
+    }
+
+    @PostMapping("/doEdit")
+    @SpecifiedPermission("authority.AdminRoleController.edit")
+    public ServerResponse editHandler(@Valid RoleEditForm roleEditForm, HttpServletResponse response) {
+
+        ResponseCode responseCode = adminRoleService.adminRoleUpdate(roleEditForm);
+
+        switch (responseCode) {
+            case ROLE_EDIT_SUCCESS:
+                return ServerResponse.createBySuccessMessage(ResponseCode.ROLE_EDIT_SUCCESS.getDesc());
+            case ROLE_NOT_EXIST:
+                return ServerResponse.createByErrorMessage(ResponseCode.ROLE_NOT_EXIST.getDesc());
+            case ROLE_CANT_EDIT:
+                return ServerResponse.createByErrorMessage(ResponseCode.ROLE_CANT_EDIT.getDesc());
+            case ROLE_EDIT_FAILED:
+                return ServerResponse.createByErrorMessage(ResponseCode.ROLE_EDIT_FAILED.getDesc());
+            default:
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                return ServerResponse.createByErrorMessage("添加失败,请重试.");
+        }
+    }
+
 
 }

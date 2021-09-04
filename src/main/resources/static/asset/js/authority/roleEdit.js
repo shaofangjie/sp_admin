@@ -13,7 +13,7 @@ layui.use(['form', 'jquery', 'authtree', 'admin'], function() {
     var roleId = $("#roleId").val();
 
     $.ajax({
-        url: '/authority/AdminRole/resourceTree/'+roleId,
+        url: '/authority/AdminRole/resourceTree/?roleId='+roleId,
         dataType: 'json',
         success: function (data) {
             // 渲染时传入渲染目标ID，树形结构数据（具体结构看样例，checked表示默认选中），以及input表单的名字
@@ -47,15 +47,15 @@ layui.use(['form', 'jquery', 'authtree', 'admin'], function() {
 
         $.ajaxSetup({
             data:{
-                "roleEditForm.authStr": authtree.getChecked('#authTree').join()
+                "authStr": authtree.getChecked('#authTree').join()
             }
         });
         $.ajax({
-            url:'/authority/AdminRole/edit',
+            url:'/authority/AdminRole/doEdit',
             method:'POST',
             data:data.field,
             success:function(data){
-                if(data.errcode === 0){
+                if(data.success){
                     layer.msg(data.msg, {time: 2000, icon:1});
                 }else{
                     layer.msg(data.msg, {time: 2000, icon:5});
@@ -64,7 +64,7 @@ layui.use(['form', 'jquery', 'authtree', 'admin'], function() {
             error:function (error) {
                 data = JSON.parse(error.responseText);
                 if(data.detail === 1){
-                    var errmsgs = data.msg;
+                    var errmsgs = data.data;
                     var errstr = '';
                     for (var i in errmsgs) {
                         errstr += errmsgs[i] + '<br />';

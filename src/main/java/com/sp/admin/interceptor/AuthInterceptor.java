@@ -97,7 +97,7 @@ public class AuthInterceptor implements HandlerInterceptor {
     }
 
     private boolean checkPermission(HandlerMethod handler, String adminId) {
-        String checkAction = "";
+        String[] checkActions = {};
         String classsName = handler.getBean().getClass().getName();
         String methodName = handler.getMethod().getName();
         log.info(classsName + methodName);
@@ -113,7 +113,7 @@ public class AuthInterceptor implements HandlerInterceptor {
                     break;
                 }
                 if (methodName.equals(method.getName()) && null != specifiedPermissionAnnotation) {
-                    checkAction = specifiedPermissionAnnotation.value();
+                    checkActions = specifiedPermissionAnnotation.value();
                     break;
                 }
             }
@@ -121,7 +121,7 @@ public class AuthInterceptor implements HandlerInterceptor {
             if (ignorePermissionCheck) {
                 return true;
             } else {
-                return !StrUtil.hasBlank(checkAction) && hasPermission(checkAction, adminId);
+                return 0 != checkActions.length && hasPermission(checkActions, adminId);
             }
 
         } catch (Exception e) {
@@ -130,11 +130,20 @@ public class AuthInterceptor implements HandlerInterceptor {
         }
     }
 
-    private boolean hasPermission(String checkAction, String adminId) {
+    private boolean hasPermission(String[] checkActions, String adminId) {
 
-        AdminResourcesEntity adminResourcesEntity = adminResourcesMapper.selectAdminResourceByAdminIdAndFun(Long.parseLong(adminId), checkAction);
+        AdminResourcesEntity adminResourcesEntity = null;
 
-        return null != adminResourcesEntity;
+        boolean check = false;
+
+        for (String checkAction : checkActions) {
+            adminResourcesEntity = adminResourcesMapper.selectAdminResourceByAdminIdAndFun(Long.parseLong(adminId), checkAction);
+            if (null != adminResourcesEntity) {
+                check = true;
+            }
+        }
+
+        return check;
 
     }
 
