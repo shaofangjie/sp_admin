@@ -146,5 +146,27 @@ public class AdminRoleController extends BaseController{
         }
     }
 
+    @GetMapping("/del")
+    @SpecifiedPermission("authority.AdminRoleController.del")
+    public ServerResponse del(@Valid RoleDelForm roleDelForm, HttpServletResponse response) {
+
+        ResponseCode responseCode = adminRoleService.adminRoleDelete(roleDelForm);
+
+        switch (responseCode) {
+            case ROLE_DEL_SUCCESS:
+                return ServerResponse.createBySuccessMessage(ResponseCode.ROLE_DEL_SUCCESS.getDesc());
+            case ROLE_NOT_EXIST:
+                return ServerResponse.createByErrorMessage(ResponseCode.ROLE_NOT_EXIST.getDesc());
+            case ROLE_DEL_FAILED:
+                return ServerResponse.createByErrorMessage(ResponseCode.ROLE_DEL_FAILED.getDesc());
+            case ROLE_CANT_DEL:
+                return ServerResponse.createByErrorMessage(ResponseCode.ROLE_CANT_DEL.getDesc());
+            default:
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                return ServerResponse.createByErrorMessage("删除失败,请重试.");
+        }
+
+    }
+
 
 }

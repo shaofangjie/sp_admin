@@ -27,4 +27,6 @@ public interface AdminRoleMapper {
 
     long deleteRoleAllResource(@Param("roleId") long roleId);
 
+    long deleteRole(AdminRoleEntity adminRole);
+
 }

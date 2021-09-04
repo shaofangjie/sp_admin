@@ -158,7 +158,7 @@ public class AdminController extends BaseController {
                 return ServerResponse.createByErrorMessage(ResponseCode.USER_CANT_DEL.getDesc());
             default:
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                return ServerResponse.createByErrorMessage("修改失败,请重试.");
+                return ServerResponse.createByErrorMessage("删除失败,请重试.");
         }
 
     }

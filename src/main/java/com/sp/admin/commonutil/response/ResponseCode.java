@@ -32,6 +32,10 @@ public enum ResponseCode {
     ROLE_NOT_EXIST(0, "角色不存在"),
     ROLE_CANT_EDIT(0, "角色权限错误"),
 
+    ROLE_DEL_FAILED(0, "角色删除失败"),
+    ROLE_DEL_SUCCESS(1, "角色删除成功"),
+    ROLE_CANT_DEL(0, "此角色无法删除"),
+
     ERROR_TRY_AGAIN(506,"正在重试"),
     ERROR_TRY_AGAIN_FAILED(507,"重试失败"),
 

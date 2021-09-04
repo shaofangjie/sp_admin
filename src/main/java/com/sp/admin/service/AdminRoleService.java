@@ -11,6 +11,7 @@ import com.sp.admin.dao.AdminRoleMapper;
 import com.sp.admin.entity.authority.AdminResourcesEntity;
 import com.sp.admin.entity.authority.AdminRoleEntity;
 import com.sp.admin.forms.authority.RoleAddForm;
+import com.sp.admin.forms.authority.RoleDelForm;
 import com.sp.admin.forms.authority.RoleEditForm;
 import com.sp.admin.forms.authority.RoleSearchForm;
 import lombok.extern.log4j.Log4j;
@@ -211,9 +212,9 @@ public class AdminRoleService {
                 adminRoleMapper.insertRoleResource(adminRoleEntity.getId(), adminResourcesEntity.getId());
             }
 
-            long row = adminRoleMapper.updateRole(adminRoleEntity);
+            long updateRow = adminRoleMapper.updateRole(adminRoleEntity);
 
-            if (row != 0) {
+            if (updateRow != 0 && delResources != 0) {
                 return ResponseCode.ROLE_EDIT_SUCCESS;
             } else {
                 return ResponseCode.ROLE_EDIT_FAILED;
@@ -222,6 +223,36 @@ public class AdminRoleService {
         } catch (Exception ex) {
             return ResponseCode.ROLE_EDIT_FAILED;
         }
+
+    }
+
+    @Transactional
+    public ResponseCode adminRoleDelete(RoleDelForm roleDelForm) {
+
+        try {
+            AdminRoleEntity adminRoleEntity = adminRoleMapper.selectRoleById(Long.parseLong(roleDelForm.getRoleId()));
+
+            if (null == adminRoleEntity) {
+                return ResponseCode.ROLE_NOT_EXIST;
+            }
+
+            if (adminRoleEntity.isLock()) {
+                return ResponseCode.ROLE_CANT_DEL;
+            }
+
+            long delResources = adminRoleMapper.deleteRoleAllResource(adminRoleEntity.getId());
+            long delRole = adminRoleMapper.deleteRole(adminRoleEntity);
+
+            if (delResources != 0 && delRole != 0) {
+                return ResponseCode.ROLE_DEL_SUCCESS;
+            } else {
+                return ResponseCode.ROLE_DEL_FAILED;
+            }
+
+        } catch (Exception ex) {
+            return ResponseCode.ROLE_DEL_FAILED;
+        }
+
 
     }
 
