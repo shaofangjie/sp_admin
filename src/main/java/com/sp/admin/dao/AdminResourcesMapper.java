@@ -23,4 +23,8 @@ public interface AdminResourcesMapper {
 
     List<AdminResourcesEntity> selectResourceByIds(@Param("resourceIds") String resourceIds);
 
+    AdminResourcesEntity selectResourceById(@Param("resourceIds") long resourceId);
+
+    long insertResource(AdminResourcesEntity adminResourcesEntity);
+
 }

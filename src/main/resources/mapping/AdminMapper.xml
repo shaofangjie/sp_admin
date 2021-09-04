@@ -92,6 +92,13 @@
         </if>
     </select>
 
+    <select id="selectSuperAdminInfo" resultMap="allAdmin">
+        select a.id, a.user_name, a.nick_name, a.`password`, a.enabled, a.is_lock, a.version, a.when_created, a.when_updated,
+        r.id role_id, r.role_name, r.is_lock role_is_lock, r.version role_version, r.when_created role_when_created, r.when_updated role_when_updated
+        from admin a LEFT JOIN admin_role r on a.role_id = r.id
+        where a.user_name = 'admin' and a.is_lock = true
+    </select>
+
     <insert id="insertAdmin" useGeneratedKeys="true" keyProperty="id" parameterType="com.sp.admin.entity.authority.AdminEntity">
         insert into admin(user_name, nick_name, role_id, `password`, enabled, is_lock, version, when_created, when_updated)
         values(#{userName}, #{nickName}, #{roleId}, #{password}, #{enabled}, #{Lock}, #{version}, #{whenCreated}, #{whenUpdated})

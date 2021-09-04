@@ -89,11 +89,11 @@ layui.use(['form', 'jquery', 'admin', 'iconPicker'], function () {
 
     form.on('submit(add)', function (data) {
         $.ajax({
-            url: '/authority/AdminResources/add',
+            url: '/authority/AdminResources/doAdd',
             method: 'POST',
             data: data.field,
             success: function (data) {
-                if (data.errcode === 0) {
+                if (data.success) {
                     layer.msg(data.msg, {time: 2000, icon: 1});
                     $("#reset").click();
                 } else {
@@ -103,7 +103,7 @@ layui.use(['form', 'jquery', 'admin', 'iconPicker'], function () {
             error: function (error) {
                 data = JSON.parse(error.responseText);
                 if (data.detail === 1) {
-                    var errmsgs = data.msg;
+                    var errmsgs = data.data;
                     var errstr = '';
                     for (var i in errmsgs) {
                         errstr += errmsgs[i] + '<br />';

@@ -13,6 +13,8 @@ public interface AdminMapper {
 
     AdminEntity selectAdminInfoById(@Param("adminId") long adminId);
 
+    AdminEntity selectSuperAdminInfo();
+
     List<AdminEntity> selectAllAdminInfo(@Param("userName") String userName
             , @Param("nickName") String nickName
             , @Param("roleId") long roleId

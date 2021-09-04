@@ -66,6 +66,17 @@
         </foreach>
     </select>
 
+    <select id="selectResourceById" resultMap="resources">
+        select id, source_pid, source_type, iconfont, source_name, source_url, source_function, enabled, source_order, is_lock, version, when_created, when_updated
+        from admin_resources
+        where id = #{resourceId}
+    </select>
+
+    <insert id="insertResource" useGeneratedKeys="true" keyProperty="id" parameterType="com.sp.admin.entity.authority.AdminResourcesEntity">
+        insert into admin_resources(source_pid, source_type, iconfont, `source_name`, source_url, source_function, enabled, source_order, is_lock, version, when_created, when_updated)
+        values(#{sourcePid}, #{sourceType}, #{iconfont}, #{sourceName}, #{sourceUrl}, #{sourceFunction}, #{enabled}, #{sourceOrder}, #{Lock}, #{version}, #{whenCreated}, #{whenUpdated})
+    </insert>
+
     <resultMap id="resources" type="com.sp.admin.entity.authority.AdminResourcesEntity">
         <result column="id" jdbcType="BIGINT" property="id" />
         <result column="source_pid" jdbcType="BIGINT" property="sourcePid" />

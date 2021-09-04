@@ -1,9 +1,16 @@
 package com.sp.admin.service;
 
+import cn.hutool.core.date.DateTime;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.sp.admin.commonutil.response.ResponseCode;
+import com.sp.admin.commonutil.response.ServerResponse;
+import com.sp.admin.dao.AdminMapper;
 import com.sp.admin.dao.AdminResourcesMapper;
+import com.sp.admin.dao.AdminRoleMapper;
+import com.sp.admin.entity.authority.AdminEntity;
 import com.sp.admin.entity.authority.AdminResourcesEntity;
+import com.sp.admin.forms.authority.ResourceAddForm;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +23,10 @@ public class AdminResourcesService {
 
     @Autowired
     AdminResourcesMapper adminResourcesMapper;
+    @Autowired
+    AdminMapper adminMapper;
+    @Autowired
+    AdminRoleMapper adminRoleMapper;
 
     public JSONObject getMenuJsonByAdminId(Long adminId) {
 
@@ -112,6 +123,54 @@ public class AdminResourcesService {
 
     }
 
+    public List<AdminResourcesEntity> getAdminResourceList() {
+        return adminResourcesMapper.selectAllResources();
+    }
+
+    public ResponseCode adminResourceSave(ResourceAddForm resourceAddForm) {
+
+        try {
+            AdminResourcesEntity parentResource = null;
+            AdminResourcesEntity newResource = new AdminResourcesEntity();
+
+            if ("0".equals(resourceAddForm.getResourcePid())) {
+                newResource.setSourcePid(null);
+            } else {
+                parentResource = adminResourcesMapper.selectResourceById(Long.parseLong(resourceAddForm.getResourcePid()));
+                if (null == parentResource) {
+                    return ResponseCode.RESOURCE_PARENT_IS_NULL;
+                }
+                newResource.setSourcePid(parentResource.getId());
+            }
+            newResource.setSourceType(Integer.parseInt(resourceAddForm.getResourceType()));
+            newResource.setEnabled(null != resourceAddForm.getEnable() && "1".equals(resourceAddForm.getEnable()));
+            newResource.setLock(false);
+            newResource.setSourceName(resourceAddForm.getResourceName());
+            newResource.setSourceUrl(resourceAddForm.getResourceUrl());
+            newResource.setSourceFunction(resourceAddForm.getResourceFun());
+            newResource.setSourceOrder(Integer.parseInt(resourceAddForm.getResourceOrder()));
+            newResource.setIconfont(resourceAddForm.getIconfont());
+            newResource.setVersion(1L);
+            newResource.setWhenCreated(DateTime.now().toTimestamp());
+            newResource.setWhenUpdated(DateTime.now().toTimestamp());
+
+            long insertRow = adminResourcesMapper.insertResource(newResource);
+            AdminEntity superAdmin = adminMapper.selectSuperAdminInfo();
+            long superAdminRoleId = superAdmin.getAdminRole().getId();
+            long insertRoleResourceRow = adminRoleMapper.insertRoleResource(superAdminRoleId, newResource.getId());
+
+            if (insertRow != 0 && insertRoleResourceRow != 0) {
+                return ResponseCode.RESOURCE_ADD_SUCCESS;
+            } else {
+                return ResponseCode.RESOURCE_ADD_FAILED;
+            }
+
+        } catch (Exception ex) {
+            return ResponseCode.RESOURCE_ADD_FAILED;
+        }
+
+
+    }
 
 
 }
