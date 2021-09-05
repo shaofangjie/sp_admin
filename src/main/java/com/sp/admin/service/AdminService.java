@@ -19,13 +19,16 @@ import com.sp.admin.forms.authority.AdminSearchForm;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Log4j
 @Service
+@Transactional(isolation = Isolation.READ_COMMITTED)
 public class AdminService {
 
     @Autowired
@@ -35,7 +38,6 @@ public class AdminService {
     @Autowired
     private AdminRoleMapper adminRoleMapper;
 
-    @Transactional
     public ResponseCode AdminLogin(LoginForm loginForm, HttpServletRequest request, boolean isDev) {
 
         try {
@@ -55,6 +57,7 @@ public class AdminService {
                 return ResponseCode.USER_DISABLE;
             }
         } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResponseCode.LOGIN_FAILED;
         }
 
@@ -63,9 +66,7 @@ public class AdminService {
     }
 
     public List<AdminRoleEntity> getAllRoleList() {
-
         return adminRoleMapper.selectAllRoles();
-
     }
 
     public PageInfo<AdminEntity> getAdminPageList(AdminSearchForm adminSearchForm, int page, int limit) {
@@ -76,108 +77,120 @@ public class AdminService {
         return new PageInfo<>(adminEntityList);
     }
 
-    @Transactional
     public ResponseCode adminSave(AdminAddForm adminAddForm) {
 
-        AdminEntity adminEntity = adminMapper.selectAdminInfoByUserName(adminAddForm.getUserName());
+        try {
+            AdminEntity adminEntity = adminMapper.selectAdminInfoByUserName(adminAddForm.getUserName());
 
-        AdminRoleEntity adminRoleEntity = adminRoleMapper.selectRoleById(Long.parseLong(adminAddForm.getRoleId()));
+            AdminRoleEntity adminRoleEntity = adminRoleMapper.selectRoleById(Long.parseLong(adminAddForm.getRoleId()));
 
-        if (null == adminRoleEntity) {
-            return ResponseCode.USER_ROLE_NOT_EXIST;
-        }
-
-        if (null != adminEntity) {
-            return ResponseCode.USER_EXIST;
-        } else {
-            adminEntity = new AdminEntity();
-            adminEntity.setUserName(adminAddForm.getUserName());
-            adminEntity.setNickName(adminAddForm.getNickName());
-            adminEntity.setRoleId(Long.parseLong(adminAddForm.getRoleId()));
-            adminEntity.setLock(false);
-            adminEntity.setEnabled(null != adminAddForm.getEnable() && "1".equals(adminAddForm.getEnable()));
-            adminEntity.setPassword(DigestUtil.sha256Hex(adminAddForm.getPassword().trim()));
-            adminEntity.setVersion(1L);
-            adminEntity.setWhenCreated(DateTime.now().toTimestamp());
-            adminEntity.setWhenUpdated(DateTime.now().toTimestamp());
-
-            adminMapper.insertAdmin(adminEntity);
-
-            long adminId = adminEntity.getId();
-
-            if (0 != adminId) {
-                return ResponseCode.USER_ADD_SUCCESS;
-            } else {
-                return ResponseCode.USER_ADD_FAILED;
+            if (null == adminRoleEntity) {
+                return ResponseCode.USER_ROLE_NOT_EXIST;
             }
+
+            if (null != adminEntity) {
+                return ResponseCode.USER_EXIST;
+            } else {
+                adminEntity = new AdminEntity();
+                adminEntity.setUserName(adminAddForm.getUserName());
+                adminEntity.setNickName(adminAddForm.getNickName());
+                adminEntity.setRoleId(Long.parseLong(adminAddForm.getRoleId()));
+                adminEntity.setLock(false);
+                adminEntity.setEnabled(null != adminAddForm.getEnable() && "1".equals(adminAddForm.getEnable()));
+                adminEntity.setPassword(DigestUtil.sha256Hex(adminAddForm.getPassword().trim()));
+                adminEntity.setVersion(1L);
+                adminEntity.setWhenCreated(DateTime.now().toTimestamp());
+                adminEntity.setWhenUpdated(DateTime.now().toTimestamp());
+
+                adminMapper.insertAdmin(adminEntity);
+
+                long adminId = adminEntity.getId();
+
+                if (0 != adminId) {
+                    return ResponseCode.USER_ADD_SUCCESS;
+                } else {
+                    return ResponseCode.USER_ADD_FAILED;
+                }
+            }
+        } catch (Exception ex) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResponseCode.USER_ADD_FAILED;
         }
 
     }
 
     public AdminEntity getAdminInfo(Long adminId) {
-
         return adminMapper.selectAdminInfoById(adminId);
-
     }
 
-    @Transactional
     @IsTryAgain
     public ResponseCode adminUpdate(AdminEditForm adminEditForm) {
 
-        AdminEntity adminEntity = adminMapper.selectAdminInfoById(Long.parseLong(adminEditForm.getAdminId()));
+        try {
 
-        if (null == adminEntity) {
-            return ResponseCode.USER_NOT_EXIST;
-        }
+            AdminEntity adminEntity = adminMapper.selectAdminInfoById(Long.parseLong(adminEditForm.getAdminId()));
 
-        if (adminEntity.isLock()) {
-            return ResponseCode.USER_CANT_EDIT;
-        }
+            if (null == adminEntity) {
+                return ResponseCode.USER_NOT_EXIST;
+            }
 
-        AdminRoleEntity adminRoleEntity = adminRoleMapper.selectRoleById(Long.parseLong(adminEditForm.getRoleId()));
+            if (adminEntity.isLock()) {
+                return ResponseCode.USER_CANT_EDIT;
+            }
 
-        if (null == adminRoleEntity) {
-            return ResponseCode.USER_ROLE_NOT_EXIST;
-        }
+            AdminRoleEntity adminRoleEntity = adminRoleMapper.selectRoleById(Long.parseLong(adminEditForm.getRoleId()));
 
-        adminEntity.setNickName(adminEditForm.getNickName());
-        adminEntity.setRoleId(Long.parseLong(adminEditForm.getRoleId()));
-        adminEntity.setEnabled(null != adminEditForm.getEnable() && "1".equals(adminEditForm.getEnable()));
-        adminEntity.setPassword(DigestUtil.sha256Hex(adminEditForm.getPassword().trim()));
-        adminEntity.setWhenUpdated(DateTime.now().toTimestamp());
+            if (null == adminRoleEntity) {
+                return ResponseCode.USER_ROLE_NOT_EXIST;
+            }
 
-        long row = adminMapper.updateAdmin(adminEntity);
+            adminEntity.setNickName(adminEditForm.getNickName());
+            adminEntity.setRoleId(Long.parseLong(adminEditForm.getRoleId()));
+            adminEntity.setEnabled(null != adminEditForm.getEnable() && "1".equals(adminEditForm.getEnable()));
+            adminEntity.setPassword(DigestUtil.sha256Hex(adminEditForm.getPassword().trim()));
+            adminEntity.setWhenUpdated(DateTime.now().toTimestamp());
 
-        if (row != 0) {
-            return ResponseCode.USER_EDIT_SUCCESS;
-        } else {
+            long row = adminMapper.updateAdmin(adminEntity);
+
+            if (row != 0) {
+                return ResponseCode.USER_EDIT_SUCCESS;
+            } else {
+                return ResponseCode.USER_EDIT_FAILED;
+            }
+        } catch (Exception ex) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResponseCode.USER_EDIT_FAILED;
         }
 
     }
 
-    @Transactional
     public ResponseCode adminDelete(AdminDelForm adminDelForm) {
 
-        AdminEntity adminEntity = this.getAdminInfo(Long.parseLong(adminDelForm.getAdminId()));
+        try {
 
-        if (null == adminEntity) {
-            return ResponseCode.USER_NOT_EXIST;
-        }
+            AdminEntity adminEntity = this.getAdminInfo(Long.parseLong(adminDelForm.getAdminId()));
 
-        if (adminEntity.isLock()) {
-            return ResponseCode.USER_CANT_DEL;
-        }
+            if (null == adminEntity) {
+                return ResponseCode.USER_NOT_EXIST;
+            }
 
-        Long row = adminMapper.deleteAdmin(adminEntity);
+            if (adminEntity.isLock()) {
+                return ResponseCode.USER_CANT_DEL;
+            }
 
-        if (row != 0) {
-            return ResponseCode.USER_DEL_SUCCESS;
-        } else {
+            long row = adminMapper.deleteAdmin(adminEntity);
+
+            if (row != 0) {
+                return ResponseCode.USER_DEL_SUCCESS;
+            } else {
+                return ResponseCode.USER_DEL_FAILED;
+            }
+
+        } catch (Exception ex) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResponseCode.USER_DEL_FAILED;
         }
 
     }
-
 
 }

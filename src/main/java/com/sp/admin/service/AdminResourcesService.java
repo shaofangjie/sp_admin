@@ -14,11 +14,15 @@ import com.sp.admin.forms.authority.ResourceAddForm;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.*;
 
 @Log4j
 @Service
+@Transactional(isolation = Isolation.READ_COMMITTED)
 public class AdminResourcesService {
 
     @Autowired
@@ -156,7 +160,7 @@ public class AdminResourcesService {
 
             long insertRow = adminResourcesMapper.insertResource(newResource);
             AdminEntity superAdmin = adminMapper.selectSuperAdminInfo();
-            long superAdminRoleId = superAdmin.getAdminRole().getId();
+            long superAdminRoleId = superAdmin.getRoleId();
             long insertRoleResourceRow = adminRoleMapper.insertRoleResource(superAdminRoleId, newResource.getId());
 
             if (insertRow != 0 && insertRoleResourceRow != 0) {
@@ -166,6 +170,7 @@ public class AdminResourcesService {
             }
 
         } catch (Exception ex) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResponseCode.RESOURCE_ADD_FAILED;
         }
 

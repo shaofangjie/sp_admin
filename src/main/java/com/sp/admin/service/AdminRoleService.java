@@ -17,18 +17,19 @@ import com.sp.admin.forms.authority.RoleSearchForm;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.*;
 
 @Log4j
 @Service
+@Transactional(isolation = Isolation.READ_COMMITTED)
 public class AdminRoleService {
 
     @Autowired
     private AdminRoleMapper adminRoleMapper;
-    @Autowired
-    private AdminResourcesService adminResourcesService;
     @Autowired
     private AdminResourcesMapper adminResourcesMapper;
 
@@ -51,7 +52,6 @@ public class AdminRoleService {
     }
 
     public JSONObject getResourceTreeJson(Long roleId) {
-
 
         List<AdminResourcesEntity> allResourcesList = adminResourcesMapper.selectAllEnableResources();
 
@@ -143,7 +143,6 @@ public class AdminRoleService {
         return resourcesTree;
     }
 
-    @Transactional
     public ResponseCode adminRoleSave(RoleAddForm roleAddForm) {
 
         try{
@@ -178,12 +177,12 @@ public class AdminRoleService {
 
             return ResponseCode.ROLE_ADD_SUCCESS;
         }catch (Exception ex) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResponseCode.ROLE_ADD_FAILED;
         }
 
     }
 
-    @Transactional
     public ResponseCode adminRoleUpdate(RoleEditForm roleEditForm) {
 
         try {
@@ -221,12 +220,12 @@ public class AdminRoleService {
             }
 
         } catch (Exception ex) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResponseCode.ROLE_EDIT_FAILED;
         }
 
     }
 
-    @Transactional
     public ResponseCode adminRoleDelete(RoleDelForm roleDelForm) {
 
         try {
@@ -250,12 +249,10 @@ public class AdminRoleService {
             }
 
         } catch (Exception ex) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResponseCode.ROLE_DEL_FAILED;
         }
 
-
     }
-
-
 
 }
