@@ -30,7 +30,7 @@ public enum ResponseCode {
     ROLE_EDIT_FAILED(0, "角色修改失败"),
     ROLE_EDIT_SUCCESS(1, "角色修改成功"),
     ROLE_NOT_EXIST(0, "角色不存在"),
-    ROLE_CANT_EDIT(0, "角色权限错误"),
+    ROLE_CANT_EDIT(0, "此角色无法修改"),
 
     ROLE_DEL_FAILED(0, "角色删除失败"),
     ROLE_DEL_SUCCESS(1, "角色删除成功"),
@@ -39,6 +39,16 @@ public enum ResponseCode {
     RESOURCE_ADD_FAILED(0, "资源添加失败"),
     RESOURCE_ADD_SUCCESS(1, "资源添加成功"),
     RESOURCE_PARENT_IS_NULL(0, "父级资源不存在"),
+
+    RESOURCE_EDIT_FAILED(0, "资源修改失败"),
+    RESOURCE_EDIT_SUCCESS(1, "资源修改成功"),
+    RESOURCE_IS_NULL(0, "资源不存在"),
+    RESOURCE_CANT_EDIT(0, "此资源无法修改"),
+
+    RESOURCE_DEL_FAILED(0, "资源删除失败"),
+    RESOURCE_DEL_SUCCESS(1, "资源删除成功"),
+    RESOURCE_HAS_CHILD(0, "此资源存在下级资源，无法删除"),
+    RESOURCE_CANT_DEL(0, "此资源无法删除"),
 
     ERROR_TRY_AGAIN(506,"正在重试"),
     ERROR_TRY_AGAIN_FAILED(507,"重试失败"),

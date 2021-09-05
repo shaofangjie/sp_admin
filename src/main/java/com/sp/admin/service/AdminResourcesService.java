@@ -11,6 +11,8 @@ import com.sp.admin.dao.AdminRoleMapper;
 import com.sp.admin.entity.authority.AdminEntity;
 import com.sp.admin.entity.authority.AdminResourcesEntity;
 import com.sp.admin.forms.authority.ResourceAddForm;
+import com.sp.admin.forms.authority.ResourceDelForm;
+import com.sp.admin.forms.authority.ResourceEditForm;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -160,7 +162,7 @@ public class AdminResourcesService {
 
             long insertRow = adminResourcesMapper.insertResource(newResource);
             AdminEntity superAdmin = adminMapper.selectSuperAdminInfo();
-            long superAdminRoleId = superAdmin.getRoleId();
+            long superAdminRoleId = superAdmin.getAdminRole().getId();
             long insertRoleResourceRow = adminRoleMapper.insertRoleResource(superAdminRoleId, newResource.getId());
 
             if (insertRow != 0 && insertRoleResourceRow != 0) {
@@ -174,6 +176,89 @@ public class AdminResourcesService {
             return ResponseCode.RESOURCE_ADD_FAILED;
         }
 
+    }
+
+    public AdminResourcesEntity getResourceById(long resourceId) {
+       return adminResourcesMapper .selectResourceById(resourceId);
+    }
+
+    public ResponseCode adminResourceUpdate(ResourceEditForm resourceEditForm) {
+        try {
+            AdminResourcesEntity adminResourcesEntity = adminResourcesMapper.selectResourceById(Long.parseLong(resourceEditForm.getResourceId()));
+            AdminResourcesEntity parentResource;
+
+            if ("0".equals(resourceEditForm.getResourcePid())) {
+                adminResourcesEntity.setSourcePid(null);
+            } else {
+                parentResource = adminResourcesMapper.selectResourceById(Long.parseLong(resourceEditForm.getResourcePid()));
+                if (null == parentResource) {
+                    return ResponseCode.RESOURCE_PARENT_IS_NULL;
+                }
+                adminResourcesEntity.setSourcePid(parentResource.getId());
+            }
+
+            if (null == adminResourcesEntity) {
+                return ResponseCode.RESOURCE_IS_NULL;
+            }
+
+            if (adminResourcesEntity.isLock()) {
+                return ResponseCode.RESOURCE_CANT_EDIT;
+            }
+
+            adminResourcesEntity.setSourceType(Integer.parseInt(resourceEditForm.getResourceType()));
+            adminResourcesEntity.setEnabled(null != resourceEditForm.getEnable() && "1".equals(resourceEditForm.getEnable()));
+            adminResourcesEntity.setSourceName(resourceEditForm.getResourceName());
+            adminResourcesEntity.setSourceUrl(resourceEditForm.getResourceUrl());
+            adminResourcesEntity.setSourceFunction(resourceEditForm.getResourceFun());
+            adminResourcesEntity.setSourceOrder(Integer.parseInt(resourceEditForm.getResourceOrder()));
+            adminResourcesEntity.setIconfont(resourceEditForm.getIconfont());
+            adminResourcesEntity.setWhenUpdated(DateTime.now().toTimestamp());
+
+            long updateRow = adminResourcesMapper.updateResource(adminResourcesEntity);
+
+            if (updateRow != 0) {
+                return ResponseCode.RESOURCE_EDIT_SUCCESS;
+            } else {
+                return ResponseCode.RESOURCE_EDIT_FAILED;
+            }
+
+        } catch (Exception ex) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResponseCode.RESOURCE_EDIT_FAILED;
+        }
+    }
+
+    public ResponseCode adminResourceDelete(ResourceDelForm resourceDelForm) {
+
+        try {
+
+            AdminResourcesEntity adminResourcesEntity = adminResourcesMapper.selectResourceById(Long.parseLong(resourceDelForm.getResourceId()));
+            if (null == adminResourcesEntity) {
+                return ResponseCode.RESOURCE_IS_NULL;
+            }
+            if (adminResourcesEntity.isLock()) {
+                return ResponseCode.RESOURCE_CANT_DEL;
+            }
+            List<AdminResourcesEntity> childAdminResourcesEntities = adminResourcesMapper.selectResourceByPid(adminResourcesEntity.getId());
+            if (0 != childAdminResourcesEntities.size()) {
+                return ResponseCode.RESOURCE_HAS_CHILD;
+            }
+
+            //TODO 先查询有没有使用再删除
+            long delRoleResourceRow = adminResourcesMapper.deleteRoleResource(adminResourcesEntity.getId());
+            long delResourceRow = adminResourcesMapper.deleteResource(adminResourcesEntity);
+
+            if (0!= delResourceRow) {
+                return ResponseCode.RESOURCE_DEL_SUCCESS;
+            } else {
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return ResponseCode.RESOURCE_DEL_FAILED;
+            }
+
+        } catch (Exception ex) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResponseCode.RESOURCE_DEL_FAILED;
+        }
 
     }
 

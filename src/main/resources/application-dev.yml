@@ -29,7 +29,7 @@ spring:
   #spring-session
   session:
     store-type: redis
-    timeout: PT30M
+    timeout: PT2H
   #数据源
   datasource:
     # Druid连接池配置

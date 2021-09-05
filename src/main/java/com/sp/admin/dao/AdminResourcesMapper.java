@@ -23,8 +23,14 @@ public interface AdminResourcesMapper {
 
     List<AdminResourcesEntity> selectResourceByIds(@Param("resourceIds") String resourceIds);
 
-    AdminResourcesEntity selectResourceById(@Param("resourceIds") long resourceId);
+    AdminResourcesEntity selectResourceById(@Param("resourceId") long resourceId);
 
     long insertResource(AdminResourcesEntity adminResourcesEntity);
+
+    long updateResource(AdminResourcesEntity adminResourcesEntity);
+
+    long deleteResource(AdminResourcesEntity adminResourcesEntity);
+
+    long deleteRoleResource(@Param("resourceId") long resourceId);
 
 }

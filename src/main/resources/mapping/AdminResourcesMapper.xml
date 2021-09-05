@@ -77,6 +77,52 @@
         values(#{sourcePid}, #{sourceType}, #{iconfont}, #{sourceName}, #{sourceUrl}, #{sourceFunction}, #{enabled}, #{sourceOrder}, #{Lock}, #{version}, #{whenCreated}, #{whenUpdated})
     </insert>
 
+    <update id="updateResource" parameterType="com.sp.admin.entity.authority.AdminResourcesEntity">
+        update admin_resources set
+        version = version + 1
+        <if test="sourcePid != null">
+            ,source_pid = #{sourcePid}
+        </if>
+        <if test="sourceType != null">
+            ,source_type = #{sourceType}
+        </if>
+        <if test="iconfont != null">
+            ,iconfont = #{iconfont}
+        </if>
+        <if test="sourceName != null">
+            ,source_name = #{sourceName}
+        </if>
+        <if test="sourceUrl != null">
+            ,source_url = #{sourceUrl}
+        </if>
+        <if test="sourceFunction != null">
+            ,source_function = #{sourceFunction}
+        </if>
+        <if test="enabled != null">
+            ,enabled = #{enabled}
+        </if>
+        <if test="sourceOrder != null">
+            ,source_order = #{sourceOrder}
+        </if>
+        <if test="whenUpdated != null">
+            ,when_updated = #{whenUpdated}
+        </if>
+        where
+        version=#{version} and is_lock = false
+        <if test="id != null">
+            and  id=#{id}
+        </if>
+    </update>
+
+    <delete id="deleteResource" parameterType="com.sp.admin.entity.authority.AdminResourcesEntity">
+        delete from admin_resources WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteRoleResource">
+        delete from admin_role_resources
+        where resource_id = #{resourceId}
+    </delete>
+
     <resultMap id="resources" type="com.sp.admin.entity.authority.AdminResourcesEntity">
         <result column="id" jdbcType="BIGINT" property="id" />
         <result column="source_pid" jdbcType="BIGINT" property="sourcePid" />

@@ -17,8 +17,11 @@ layui.use(['form', 'admin', 'jquery'], function () {
             }
         },
         captcha: function (value) {
+            var reg = /^[a-zA-Z0-9]{5}$/;
             if (isEmptyString(value)) {
                 return "请输入验证码";
+            } else if(!reg.test(value)){
+                return "验证码格式错误";
             }
         }
     });

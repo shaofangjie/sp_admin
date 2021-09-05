@@ -75,7 +75,7 @@ layui.use(['table', 'jquery', 'admin', 'layer', 'treetable'], function () {
                 shadeClose: true,
                 shade: 0.4,
                 title: '修改权限资源',
-                content: '/authority/AdminResources/edit/' + dataId
+                content: '/authority/AdminResources/edit/?resourceId=' + dataId
             });
 
             $("a.layui-layer-close").click(function () {
@@ -90,10 +90,10 @@ layui.use(['table', 'jquery', 'admin', 'layer', 'treetable'], function () {
                 btn: ['确定', '取消'],
                 yes: function (index, layero) {
                     $.ajax({
-                        url:'/authority/AdminResources/del/'+dataId,
+                        url:'/authority/AdminResources/del/?resourceId='+dataId,
                         method:'GET',
                         success:function(data){
-                            if(data.errcode === 0){
+                            if(data.success){
                                 layer.msg(data.msg, {time: 2000, icon:1});
                                 initTreeTable();
                             }else{
@@ -103,7 +103,7 @@ layui.use(['table', 'jquery', 'admin', 'layer', 'treetable'], function () {
                         error:function (error) {
                             data = JSON.parse(error.responseText);
                             if(data.detail === 1){
-                                var errmsgs = data.msg;
+                                var errmsgs = data.data;
                                 var errstr = '';
                                 for (var i in errmsgs) {
                                     errstr += errmsgs[i] + '<br />';

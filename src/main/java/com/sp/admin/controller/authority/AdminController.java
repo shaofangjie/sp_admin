@@ -106,8 +106,7 @@ public class AdminController extends BaseController {
         AdminEntity adminEntity = adminService.getAdminInfo(Long.parseLong(adminEditPageForm.getAdminId()));
 
         if (null == adminEntity) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return modelAndView;
+            return null;
         }
 
         modelAndView.addObject("adminRoleList", adminService.getAllRoleList());

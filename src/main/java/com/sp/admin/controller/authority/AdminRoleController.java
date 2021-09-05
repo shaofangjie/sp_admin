@@ -110,13 +110,12 @@ public class AdminRoleController extends BaseController{
 
     @GetMapping("/edit")
     @SpecifiedPermission("authority.AdminRoleController.edit")
-    public ModelAndView edit(@Valid RoleEditPageForm roleEditPageForm, HttpServletResponse response, ModelAndView modelAndView) {
+    public ModelAndView edit(@Valid RoleEditPageForm roleEditPageForm, ModelAndView modelAndView) {
 
         AdminRoleEntity adminRoleEntity = adminRoleService.getRoleById(Long.parseLong(roleEditPageForm.getRoleId()));
 
         if (null == adminRoleEntity) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return modelAndView;
+            return null;
         }
 
         modelAndView.addObject("adminRole", adminRoleEntity);
