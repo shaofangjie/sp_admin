@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.sp.admin</groupId>
-    <artifactId>admin</artifactId>
+    <artifactId>sp_admin</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>sp_admin</name>
-    <description>Demo project for Spring Boot</description>
+    <description>Starting project for Spring Boot</description>
     <properties>
         <java.version>1.8</java.version>
     </properties>
@@ -150,7 +150,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <fork>true</fork>
+                    <mainClass>com.sp.admin.SpAdminApplication</mainClass>
                 </configuration>
             </plugin>
         </plugins>
