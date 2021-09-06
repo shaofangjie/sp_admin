@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface AdminResourcesMapper {
@@ -32,5 +33,7 @@ public interface AdminResourcesMapper {
     long deleteResource(AdminResourcesEntity adminResourcesEntity);
 
     long deleteRoleResource(@Param("resourceId") long resourceId);
+
+    Map<String,Object> selectResourceUseCount(@Param("resourceId") long resourceId);
 
 }

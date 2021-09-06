@@ -155,4 +155,10 @@
         </choose>
     </select>
 
+    <select id="selectResourceUseCount" resultType="HashMap">
+        select count(resource_id) usecount
+        from admin_role_resources
+        where resource_id = #{resourceId}
+    </select>
+
 </mapper>

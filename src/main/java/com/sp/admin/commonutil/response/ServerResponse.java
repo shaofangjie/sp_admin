@@ -1,7 +1,7 @@
 package com.sp.admin.commonutil.response;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import java.io.Serializable;
 
@@ -82,7 +82,6 @@ public class ServerResponse<T> implements Serializable {
     public static <T> ServerResponse<T> createByErrorNeeDLogin(String erroeMessage) {
         return new ServerResponse<T>(ResponseCode.NEED_REGISTER.getCode(), erroeMessage);
     }
-
 
     //编写外部访问的Public方法,之前需要写一个枚举类
     //这样外部的显示的就是这几个值啦

@@ -244,17 +244,27 @@ public class AdminResourcesService {
                 return ResponseCode.RESOURCE_HAS_CHILD;
             }
 
-            //TODO 先查询有没有使用再删除
-            long delRoleResourceRow = adminResourcesMapper.deleteRoleResource(adminResourcesEntity.getId());
-            long delResourceRow = adminResourcesMapper.deleteResource(adminResourcesEntity);
-
-            if (0!= delResourceRow) {
-                return ResponseCode.RESOURCE_DEL_SUCCESS;
-            } else {
-                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                return ResponseCode.RESOURCE_DEL_FAILED;
+            Map<String,Object> resourceUseCount = adminResourcesMapper.selectResourceUseCount(adminResourcesEntity.getId());
+            long delRoleResourceRow = 0L;
+            if ((long)resourceUseCount.get("usecount") > 0) {
+                delRoleResourceRow = adminResourcesMapper.deleteRoleResource(adminResourcesEntity.getId());
             }
-
+            long delResourceRow = adminResourcesMapper.deleteResource(adminResourcesEntity);
+            if ((long)resourceUseCount.get("usecount") > 0) {
+                if (0 != delResourceRow && 0 != delRoleResourceRow) {
+                    return ResponseCode.RESOURCE_DEL_SUCCESS;
+                } else {
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return ResponseCode.RESOURCE_DEL_FAILED;
+                }
+            } else {
+                if (0 != delResourceRow) {
+                    return ResponseCode.RESOURCE_DEL_SUCCESS;
+                } else {
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return ResponseCode.RESOURCE_DEL_FAILED;
+                }
+            }
         } catch (Exception ex) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResponseCode.RESOURCE_DEL_FAILED;
