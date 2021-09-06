@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -74,6 +75,14 @@ public class LoginController extends BaseController {
                 return ServerResponse.createByErrorMessage("登录失败,请重试.");
         }
 
+    }
+
+    @GetMapping("/loginout")
+    public ModelAndView loginOut(HttpSession session, SessionStatus sessionStatus, ModelAndView modelAndView) {
+        session.invalidate();
+        sessionStatus.setComplete();
+        modelAndView.setViewName("redirect:/login");
+        return modelAndView;
     }
 
 }
