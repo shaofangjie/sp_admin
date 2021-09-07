@@ -1,5 +1,5 @@
 # sp_admin
-##一个基于springboot+mybatis+beetl的项目后台脚手架,权限控制未使用第三方组件，自己用注解+拦截器实现。
+##之前使用actframework实现了一个后台脚手架，但是现在主流的框架还是springboot所以就用springboot+mybatis+beetl又搞了一个项目后台脚手架,权限控制未使用第三方组件，自己用注解+拦截器实现。
 ##项目初始化步骤：
 ```
 1、git拉取代码到本地
